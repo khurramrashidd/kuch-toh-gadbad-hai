@@ -49,6 +49,14 @@ Updated with every code drop. ✅ done · ⬜ remaining · 🔁 run again whenev
 - ✅ Pipeline: GLDAS soil / evaporation / runoff, GPM IMERG, MERRA-2 T2M, MODIS NDVI + land heat and OMI NO2 (via NASA NEO); 3 new cases
 - ⚠ Not run on a device or against NASA servers by the builder: test the globe, upload and the new datasets first
 
+## Changes (v1.2.1, 14 Nov afternoon)
+- ✅ Responsive frame: phone (header + bottom bar), tablet (header + left rail + footer), desktop (header + left sidebar + right sidebar + footer)
+- ✅ Header strip: date, time, nearest city, current weather (Open-Meteo, cited); right sidebar "Here and now", verdict guide, strongest case, data status
+- ✅ "Zoom to my location" button on the flat map and the globe
+- ✅ Phone: icon-only header actions, filters collapsed behind a Filters button, duplicate titles removed
+- ✅ NASA NEO folder reader accepts more link styles and reports what it found
+- ✅ Real data in the app: 12 datasets, 6 cases, 30 cities (site live at ktgh-nasa.web.app)
+
 ## Remaining
 - ⬜ Real data run: paste the summary table and `python -m detective status`
 - ⬜ Firebase console: Firestore, Anonymous + Google sign-in, AI Logic (Gemini Developer API)

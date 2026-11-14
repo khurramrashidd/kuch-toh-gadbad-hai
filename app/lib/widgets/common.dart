@@ -230,11 +230,37 @@ class ThemeButton extends StatelessWidget {
   }
 }
 
-/// Theme toggle + language toggle, used in every screen header.
-class HeaderActions extends StatelessWidget {
-  const HeaderActions({super.key});
+/// Marks the area inside the main shell, whose own header already shows the actions.
+class InShell extends InheritedWidget {
+  const InShell({super.key, required super.child});
   @override
-  Widget build(BuildContext context) => const Row(mainAxisSize: MainAxisSize.min, children: [ModeButton(), ThemeButton(), LangButton()]);
+  bool updateShouldNotify(covariant InShell oldWidget) => false;
+}
+
+/// Mode + theme + language, used in every pushed screen's app bar (hidden inside the shell).
+class HeaderActions extends StatelessWidget {
+  const HeaderActions({super.key, this.force = false});
+  final bool force;
+  @override
+  Widget build(BuildContext context) {
+    if (!force && context.getInheritedWidgetOfExactType<InShell>() != null) return const SizedBox.shrink();
+    final compact = MediaQuery.sizeOf(context).width < 700;
+    if (!compact) return const Row(mainAxisSize: MainAxisSize.min, children: [ModeButton(), ThemeButton(), LangButton()]);
+    final app = context.app;
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      IconButton(
+        tooltip: tx(context, app.expert ? 'Scientist mode (tap for Simple)' : 'Simple mode (tap for Scientist)', app.expert ? 'वैज्ञानिक मोड' : 'सरल मोड'),
+        onPressed: () => AppScope.read(context).toggleExpert(),
+        icon: Icon(app.expert ? Icons.science : Icons.emoji_objects_outlined, color: context.k.accent),
+      ),
+      const ThemeButton(),
+      IconButton(
+        tooltip: context.t('language'),
+        onPressed: () => AppScope.read(context).toggleLang(),
+        icon: Icon(Icons.translate, color: context.k.accent),
+      ),
+    ]);
+  }
 }
 
 /// Simple (plain words) <-> Scientist (all numbers) switch.

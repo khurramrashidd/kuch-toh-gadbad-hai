@@ -38,7 +38,9 @@ class WorldMap extends StatefulWidget {
     this.onTap,
     this.focus,
     this.layerPainter,
+    this.onLocate,
   });
+  final VoidCallback? onLocate; // "zoom to where I am" button
   final CustomPainter? layerPainter; // drawn instead of the PNG (filtered cells)
   final String? layerUrl, stippleUrl;
   final List<double>? layerBounds; // west, south, east, north
@@ -172,6 +174,7 @@ class _WorldMapState extends State<WorldMap> {
                 _ZoomBtn(icon: Icons.remove, onTap: () => _zoom(1 / 1.6)),
                 const SizedBox(height: 4),
                 _ZoomBtn(icon: Icons.public, onTap: () => _tc.value = Matrix4.identity()),
+                if (widget.onLocate != null) ...[const SizedBox(height: 4), _ZoomBtn(icon: Icons.my_location, onTap: widget.onLocate!)],
               ]),
             ),
           ]),

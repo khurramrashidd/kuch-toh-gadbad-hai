@@ -11,6 +11,7 @@ import 'services/ai_service.dart';
 import 'services/data_service.dart';
 import 'services/device_service.dart';
 import 'services/power_service.dart';
+import 'services/weather_service.dart';
 
 /// Land outline + city list bundled in assets/geo (Natural Earth, public domain).
 class WorldAssets {
@@ -55,6 +56,16 @@ class AppState extends ChangeNotifier {
   bool expert = false; // Simple mode first; Scientist mode shows every number
   int tab = 0;
   ExploreRequest? exploreRequest; // set by the guided investigation, consumed by the Explore tab
+
+  // ---- here and now (header / sidebar strip)
+  final WeatherService weatherService = WeatherService();
+  (double, double)? here; // lat, lon of the device
+  String? hereName;
+  WeatherNow? weather;
+  bool locating = false;
+  String? locateError; // string key
+  DateTime now = DateTime.now();
+  Timer? _clock;
   Catalog? catalog;
   WorldAssets? world;
   String? error;
@@ -72,6 +83,52 @@ class AppState extends ChangeNotifier {
     expert = await device.loadBool('expert');
     await load();
     if (kDebugMode || (kIsWeb && Uri.base.queryParameters['live'] == '1')) setLive(true);
+    _clock = Timer.periodic(const Duration(seconds: 20), (_) {
+      final t = DateTime.now();
+      if (t.minute != now.minute) {
+        now = t;
+        notifyListeners();
+      }
+    });
+    locate(); // asks for location once; the app works without it
+  }
+
+  /// Find the device, name the nearest city and fetch the current weather.
+  Future<(double, double)?> locate() async {
+    if (locating) return here;
+    locating = true;
+    locateError = null;
+    notifyListeners();
+    try {
+      final ll = await device.currentLocation();
+      here = ll;
+      hereName = nearestCity(ll.$1, ll.$2);
+      notifyListeners();
+      weather = await weatherService.now(ll.$1, ll.$2);
+    } on LocationFailure catch (e) {
+      locateError = e.key;
+    } catch (_) {
+      locateError = 'gps_off';
+    }
+    locating = false;
+    notifyListeners();
+    return here;
+  }
+
+  String? nearestCity(double lat, double lon) {
+    final cities = world?.cities;
+    if (cities == null || cities.isEmpty) return null;
+    City? best;
+    var bd = double.infinity;
+    for (final c in cities) {
+      final dx = ((c.lon - lon + 540) % 360 - 180) * 0.9, dy = c.lat - lat;
+      final d = dx * dx + dy * dy;
+      if (d < bd) {
+        bd = d;
+        best = c;
+      }
+    }
+    return best == null || bd > 9 ? null : best.name; // within about 3 degrees
   }
 
   /// Fetch everything again (after a pipeline run).
@@ -117,6 +174,13 @@ class AppState extends ChangeNotifier {
     }
     loading = false;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _clock?.cancel();
+    _liveTimer?.cancel();
+    super.dispose();
   }
 
   void toggleLang() {

@@ -292,26 +292,36 @@ def fetch_http_index(src: Source, cfg: Config) -> list[Path]:
             log.warning("  %s: listing failed (%s) - using %d cached files", src.id, e, len(cached))
             return cached
         raise DetectiveError(f"{src.id}: cannot read folder listing {base}: {e}") from e
-    names = sorted({m for m in _re.findall(r'href="([^"?/][^"?]*)"', html) if rx.search(m)})
-    start = int(src.period.get("start", 0) or 0) if str(src.period.get("start", "")).isdigit() else 0
-    months = set((a.get("sample") or {}).get("months") or [])
+    from urllib.parse import urljoin
+
     from .readers import time_from_filename
 
+    hrefs = _re.findall(r"""href\s*=\s*["']([^"'#]+)["']""", html, flags=_re.I)
+    links = sorted({urljoin(base, h.split("?")[0]) for h in hrefs if rx.search(h.split("?")[0])})
+    if not links:  # some listings print bare file names without links
+        links = sorted({urljoin(base, m) for m in _re.findall(r"[\w.\-]+\.(?:FLOAT\.)?TIFF?", html, flags=_re.I)})
+    if not links:
+        sample = [h for h in hrefs if not h.startswith(("?", "#"))][:8]
+        raise DetectiveError(f"{src.id}: no files matching {rx.pattern!r} at {base}; the page has {len(hrefs)} links, e.g. {sample}. "
+                             f"Send Claude the saved page: {listing}")
+    start = int(src.period.get("start", 0) or 0) if str(src.period.get("start", "")).isdigit() else 0
+    months = set((a.get("sample") or {}).get("months") or [])
     todo = []
-    for n in names:
+    for u in links:
+        n = u.rstrip("/").split("/")[-1]
         t = time_from_filename(n)
         if t is not None:
             y, mth = int(str(t)[:4]), int(str(t)[5:7])
             if y < start or (months and mth not in months):
                 continue
-        todo.append(n)
+        todo.append(u)
     if not todo:
         raise DetectiveError(f"{src.id}: no files matching {rx.pattern!r} at {base}")
     log.info("  %s: %d files listed at %s", src.id, len(todo), base)
     out = []
     for i, n in enumerate(todo, 1):
         try:
-            out.append(_maybe_decompress(_download(base + n, raw_dir / n.split("/")[-1]), a.get("decompress", "auto")))
+            out.append(_maybe_decompress(_download(n, raw_dir / n.rstrip("/").split("/")[-1]), a.get("decompress", "auto")))
         except Exception as e:
             log.warning("    skip %s (%s)", n, e)
         if i % 50 == 0:

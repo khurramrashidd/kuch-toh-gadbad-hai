@@ -23,15 +23,12 @@ class _CasesScreenState extends State<CasesScreen> {
     final cases = cat.cases.where((c) => _filter == 'all' || c.spotlight == _filter).toList();
     return SafeArea(
       child: CustomScrollView(slivers: [
-        SliverAppBar(
-          pinned: true,
-          title: Text(context.t('app_name'), style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 0.3)),
-          actions: const [HeaderActions()],
-        ),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(context.t('cases_title'), style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: 4),
               Text(context.t('app_tagline'), style: TextStyle(color: context.k.accent, fontSize: 15, fontWeight: FontWeight.w600)),
               const SizedBox(height: 6),
               Text(context.t('what_where_howmuch'), style: TextStyle(color: context.k.muted, fontSize: 12.5)),

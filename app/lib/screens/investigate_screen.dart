@@ -58,7 +58,7 @@ class _InvestigateScreenState extends State<InvestigateScreen> {
           constraints: const BoxConstraints(maxWidth: 980),
           child: ListView(padding: const EdgeInsets.fromLTRB(14, 10, 14, 40), children: [
             Row(children: [
-              Expanded(child: Text(context.t('app_name'), style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900))),
+              Expanded(child: Text(tx(context, 'Start an investigation', 'जाँच शुरू करें'), style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900))),
               const HeaderActions(),
             ]),
             Text(tx(context, 'Other tools draw the line. We tell you if it is real, why it is happening, and how to check us.', 'दूसरे टूल रेखा खींचते हैं। हम बताते हैं कि वह असली है या नहीं, क्यों हो रहा है, और हमें कैसे परखें।'),

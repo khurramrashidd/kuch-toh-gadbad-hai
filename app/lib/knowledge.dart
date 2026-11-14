@@ -114,5 +114,6 @@ const kReferences = <Reference>[
   // Software
   Reference('Software', 'Flutter, Firebase (Hosting, Firestore, Auth, AI Logic)', 'Google', 'https://firebase.google.com/', 'App, hosting, cache and the AI explainer.', 'ऐप, होस्टिंग, कैश और एआई व्याख्याकार।'),
   Reference('Software', 'xarray, NumPy, SciPy, pandas, Pillow', 'open source', 'https://xarray.dev/', 'The Python data pipeline.', 'पायथन डेटा पाइपलाइन।'),
+  Reference('Software', 'Open-Meteo weather API', 'Open-Meteo.com (CC BY 4.0)', 'https://open-meteo.com/', 'Only the "here and now" weather strip. Never used in any trend or verdict.', 'सिर्फ़ "यहाँ और अभी" मौसम पट्टी। किसी रुझान या फ़ैसले में कभी नहीं।'),
   Reference('Software', 'Natural Earth', 'public domain', 'https://www.naturalearthdata.com/', 'Coastlines and city names on the map and globe.', 'नक़्शे और ग्लोब पर तटरेखाएँ और शहरों के नाम।'),
 ];

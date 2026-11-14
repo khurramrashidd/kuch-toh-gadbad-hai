@@ -112,7 +112,9 @@ const kGeoLabels = <GeoLabel>[
 
 /// Interactive orthographic globe: drag to spin, pinch / wheel / buttons to zoom, tap to pick a place.
 class GlobeView extends StatefulWidget {
-  const GlobeView({super.key, this.meta, this.cells, this.filter = const CellFilter(), this.markers = const [], this.regions = const [], this.redString = false, this.onTap, this.focus, this.height});
+  const GlobeView({super.key, this.meta, this.cells, this.filter = const CellFilter(), this.markers = const [], this.regions = const [], this.redString = false, this.onTap, this.focus, this.height, this.onLocate, this.focusZoom});
+  final VoidCallback? onLocate;
+  final double? focusZoom;
   final LayerMeta? meta;
   final LayerCells? cells;
   final CellFilter filter;
@@ -152,6 +154,7 @@ class _GlobeViewState extends State<GlobeView> {
       _lastFocus = f;
       _lat = f[0].clamp(-85.0, 85.0);
       _lon = f[1];
+      if (widget.focusZoom != null) _zoom = widget.focusZoom!.clamp(0.8, 9.0);
     }
   }
 
@@ -264,11 +267,12 @@ class _GlobeViewState extends State<GlobeView> {
                 const SizedBox(height: 4),
                 _Btn(Icons.remove, () => _setZoom(_zoom / 1.5)),
                 const SizedBox(height: 4),
-                _Btn(Icons.my_location, () => setState(() {
+                _Btn(Icons.public, () => setState(() {
                       _lat = 18;
                       _lon = 78;
                       _zoom = 1;
                     })),
+                if (widget.onLocate != null) ...[const SizedBox(height: 4), _Btn(Icons.my_location, widget.onLocate!)],
               ]),
             ),
           ]),
