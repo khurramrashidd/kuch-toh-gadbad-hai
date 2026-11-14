@@ -1,0 +1,40 @@
+# Copy this file to <your_id>.yaml (no leading underscore) to plug in ANY new dataset.
+# Faster: python -m detective add <file-or-url>   (it inspects the file and drafts this for you)
+id: my_dataset                 # unique, lowercase
+title: What it measures (Mission name)
+title_hi: हिंदी नाम
+short: Short name              # used in sentences: "<short> is rising in ..."
+short_hi: छोटा नाम
+sphere: atmosphere             # atmosphere | hydrosphere | cryosphere | biosphere | anthroposphere | geosphere
+mission: NASA mission / instrument / model
+kind: grid                     # grid (time,lat,lon) | index (one time series) | levels (time,level,lat,lon)
+role: layer                    # layer (map) | driver (suspect for mirror cases) | both
+enabled: true
+access:
+  method: local                # local | http | earthaccess
+  path: inbox/my_file.nc       # local: file, folder or glob (relative to pipeline/)
+  # url: https://...           # http: one file (+ fallback_urls: [...])
+  # files: [{url: ..., name: ...}]
+  # template: https://.../file_{year}{month:02d}.nc  + template_vars: {year: [...], month: [...]}
+  # short_name: [CMR_SHORT_NAME]   # earthaccess (Earthdata Login); version, bounding_box, sample, mode: stream
+read:
+  variable: [var_name, alternative_name]   # first one found is used
+  # group: HDFEOS/GRIDS/...    # HDF5 / HDF-EOS group
+  # fill_values: [-9999]
+  # scale: {multiply: 0.0001, add: 0}
+  # valid_range: [-1, 1]
+  # sel: {band: 1}             # pick a slice of extra dimensions
+  # time_regex: "A(\\d{4})(\\d{3})"   # date in file names when the files have no time variable
+  # coarsen_on_read: 4         # shrink huge grids while reading many files
+convert: null                  # K_to_C | kg_m2_s_to_mm_day | m_to_cm | {multiply: x, add: y}
+units: "°C"
+aggregate: mean                # monthly -> season: mean | sum
+trend_units: absolute          # absolute | percent (of the 1991-2020 normal)
+period: {start: auto, end: auto}
+seasons: [ANN]                 # ANN JJAS DJF MAM JJA SON OND or single months FEB MAR SEP
+analysis_grid: null            # e.g. 1.0 to coarsen fine grids to 1 degree
+min_coverage: 0.75             # share of months needed for a valid year
+palette: generic               # temp | precip | water | ice | green | air | generic
+known_transitions: []          # [{date: "2018-06", label: "new satellite"}] -> alibi check
+citation: Full citation (required by Space Apps rules)
+url_info: https://landing.page

@@ -1,0 +1,34 @@
+# NASA JPL GRACE + GRACE-FO mascons, CRI filtered - needs a free NASA Earthdata Login
+id: grace_mascon
+title: Water stored on land (NASA GRACE / GRACE-FO)
+title_hi: ज़मीन में जमा पानी (NASA GRACE / GRACE-FO)
+short: Water storage
+short_hi: जल भंडार
+sphere: hydrosphere
+mission: NASA/DLR GRACE (2002-2017) and NASA/GFZ GRACE-FO (2018-) gravity satellites, JPL RL06.3Mv04 mascons
+kind: grid
+role: layer
+access:
+  method: earthaccess
+  short_name: [TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06.3_V4, TELLUS_GRAC-GRFO_MASCON_GRID_RL06.3_V4]
+  keyword: JPL GRACE mascon CRI
+read:
+  variable: lwe_thickness
+  multiply_by: {variable: scale_factor, fill_as: 1.0}   # JPL land gain factors (Wiese et al. 2016)
+  mask_with: {variable: land_mask, keep: 1}             # land hydrology only
+units: cm
+period: {start: 2003, end: auto}
+seasons: [ANN]
+analysis_grid: 1.0
+min_coverage: 0.5             # GRACE has missing months (battery management, 2017-18 gap)
+palette: water
+known_transitions:
+  - {date: "2017-06", label: "GRACE mission ended", label_hi: "GRACE मिशन ख़त्म"}
+  - {date: "2018-06", label: "GRACE-FO data begins", label_hi: "GRACE-FO डेटा शुरू"}
+citation: >-
+  Wiese, D. N., D.-N. Yuan, C. Boening, F. W. Landerer, M. M. Watkins, 2023: JPL GRACE and GRACE-FO Mascon
+  Ocean, Ice, and Hydrology Equivalent Water Height Coastal Resolution Improvement (CRI) Filtered RL06.3Mv04.
+  PO.DAAC, CA, USA. https://doi.org/10.5067/TEMSC-3JC634
+url_info: https://podaac.jpl.nasa.gov/dataset/TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06.3_V4
+explain: "All the water stored on and under the land - groundwater, soil water, snow - weighed from space by gravity."
+explain_hi: "ज़मीन के ऊपर और नीचे जमा सारा पानी - भूजल, मिट्टी की नमी, बर्फ़ - गुरुत्वाकर्षण से अंतरिक्ष से तौला गया।"

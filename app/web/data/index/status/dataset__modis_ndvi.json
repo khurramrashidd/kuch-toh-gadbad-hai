@@ -1,0 +1,1 @@
+{"status":"error","reason":"DetectiveError: modis_ndvi: no files matching '\\\\.(FLOAT\\\\.)?TIFF?$' at https://neo.gsfc.nasa.gov/archive/geotiff.float/MOD_NDVI_M/","kind":"dataset","id":"modis_ndvi","_demo":false,"at":"2026-11-14T09:33:46+00:00"}

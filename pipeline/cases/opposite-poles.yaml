@@ -1,0 +1,15 @@
+id: opposite-poles
+title: Opposite Poles?
+title_hi: उल्टे ध्रुव?
+tagline: Arctic ice melts away - so why did Antarctica's hold on so long?
+tagline_hi: आर्कटिक की बर्फ़ पिघल रही है - तो अंटार्कटिका की इतने समय तक क्यों टिकी रही?
+question: Is summer sea ice shrinking at one pole and growing at the other - and did that change after 2016?
+question_hi: क्या गर्मियों की समुद्री बर्फ़ एक ध्रुव पर घट और दूसरे पर बढ़ रही है - और क्या 2016 के बाद यह बदल गया?
+spotlight: global
+type: mirror_series
+short: Summer sea ice
+short_hi: गर्मियों की समुद्री बर्फ़
+gender_hi: f
+series_a: {source: seaice_arctic, season: SEP, name: Arctic (September minimum), name_hi: आर्कटिक (सितंबर न्यूनतम), bbox: [-180, 66, 180, 90]}
+series_b: {source: seaice_antarctic, season: FEB, name: Antarctic (February minimum), name_hi: अंटार्कटिक (फ़रवरी न्यूनतम), bbox: [-180, -90, 180, -60]}
+drivers: [gistemp_global]

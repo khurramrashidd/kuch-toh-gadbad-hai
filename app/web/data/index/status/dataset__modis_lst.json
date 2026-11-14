@@ -1,0 +1,1 @@
+{"status":"error","reason":"DetectiveError: modis_lst: no files matching '\\\\.(FLOAT\\\\.)?TIFF?$' at https://neo.gsfc.nasa.gov/archive/geotiff.float/MOD_LSTD_M/","kind":"dataset","id":"modis_lst","_demo":false,"at":"2026-11-14T09:33:42+00:00"}

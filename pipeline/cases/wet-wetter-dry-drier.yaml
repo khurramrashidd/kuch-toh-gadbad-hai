@@ -1,0 +1,14 @@
+id: wet-wetter-dry-drier
+title: Wet Gets Wetter, Dry Gets Drier
+title_hi: भीगा और भीगे, सूखा और सूखे
+tagline: The planet's rainfall is splitting in two
+tagline_hi: धरती की बारिश दो हिस्सों में बँट रही है
+question: Is a warming planet making its rainiest places rainier and its dry places drier?
+question_hi: क्या गर्म होती धरती सबसे बरसाती जगहों पर और बारिश, और सूखी जगहों पर और सूखा ला रही है?
+spotlight: global
+type: auto_mirror
+source: gpcp_precip
+season: ANN
+region_a: {auto: positive}
+region_b: {auto: negative}
+drivers: [gistemp_global, nino34]

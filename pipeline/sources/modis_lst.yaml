@@ -1,0 +1,32 @@
+# From NASA Earth Observations (NEO) monthly floating-point GeoTIFFs: light files, no login.
+# NEO says these are "data-like" quick-look products, not the original science files - the app shows that note.
+id: modis_lst
+title: Daytime land surface temperature (NASA MODIS)
+title_hi: दिन में ज़मीन की सतह का तापमान (NASA MODIS)
+short: Land heat (MODIS)
+short_hi: ज़मीन की गर्मी (MODIS)
+gender_hi: m
+sphere: land
+mission: NASA Terra MODIS land surface temperature (MOD11C1), monthly day-time, via NASA Earth Observations
+kind: grid
+role: layer
+access:
+  method: http_index
+  url: https://neo.gsfc.nasa.gov/archive/geotiff.float/MOD_LSTD_M/
+  match: '\.(FLOAT\.)?TIFF?$'
+read:
+  tiff_reader: pillow
+  coarsen_on_read: 10
+  fill_values: [99999.0]
+units: "°C"
+period: {start: 2000, end: auto}
+seasons: [ANN]
+analysis_grid: 1.0
+min_coverage: 0.7
+palette: temp
+quality_note: "Quick-look product from NASA Earth Observations (NEO), not the original science files."
+explain: "How hot the ground itself is to the touch in daytime - not the air - as seen by satellite."
+explain_hi: "दिन में ज़मीन खुद छूने पर कितनी गर्म है (हवा नहीं) - उपग्रह से नापा गया।"
+citation: >-
+  Wan, Z., S. Hook, G. Hulley, 2021: MODIS/Terra Land Surface Temperature/Emissivity Daily L3 Global 0.05Deg CMG V061. NASA LP DAAC. https://doi.org/10.5067/MODIS/MOD11C1.061 ; imagery by NASA Earth Observations (NEO).
+url_info: https://neo.gsfc.nasa.gov/view.php?datasetId=MOD_LSTD_M

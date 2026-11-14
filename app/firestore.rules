@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'khurramrashid0786@gmail.com' && request.auth.token.email_verified == true;
+    }
+
+    // AI "Detective's notes" cache: anyone reads; signed-in (anonymous) app users add or refresh.
+    match /narrations/{id} {
+      allow read: if true;
+      allow create, update: if signedIn()
+        && request.resource.data.text is string
+        && request.resource.data.text.size() < 4000;
+      allow delete: if isAdmin();
+    }
+
+    // NASA POWER results for a half-degree box, so the same place is never fetched twice.
+    match /place_cache/{id} {
+      allow read: if true;
+      allow create, update: if signedIn()
+        && request.resource.data.keys().hasOnly(['json', 'created'])
+        && request.resource.data.json is string
+        && request.resource.data.json.size() < 60000;
+      allow delete: if isAdmin();
+    }
+
+    // Team admin: full access (hackathon housekeeping).
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

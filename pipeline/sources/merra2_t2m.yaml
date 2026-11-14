@@ -1,0 +1,34 @@
+# NASA MERRA-2 monthly 2 m air temperature (named in the challenge statement). Streamed: only T2M is read.
+id: merra2_t2m
+title: Air temperature near the ground (NASA MERRA-2)
+title_hi: ज़मीन के पास हवा का तापमान (NASA MERRA-2)
+short: Air temperature (MERRA-2)
+short_hi: हवा का तापमान (MERRA-2)
+sphere: atmosphere
+mission: NASA GMAO MERRA-2 reanalysis (M2TMNXSLV, monthly mean)
+kind: grid
+role: layer
+access:
+  method: earthaccess
+  short_name: M2TMNXSLV
+  version: "5.12.4"
+  mode: stream
+  subset: {variables: [T2M], coarsen: 2}
+read:
+  variable: T2M
+convert: K_to_C
+units: °C
+period: {start: 1980, end: auto}
+seasons: [ANN, JJAS, DJF]
+analysis_grid: 2.0
+min_coverage: 0.75
+palette: temp
+known_transitions:
+  - {date: "1998-07", label: "NOAA-15 AMSU data enter the model", label_hi: "NOAA-15 AMSU डेटा मॉडल में जुड़ा"}
+explain: "Air temperature 2 m above the ground from NASA's weather-history model, which blends satellite and ground data."
+explain_hi: "ज़मीन से 2 मीटर ऊपर हवा का तापमान, NASA के मौसम-इतिहास मॉडल से, जो उपग्रह और ज़मीनी डेटा मिलाता है।"
+citation: >-
+  Global Modeling and Assimilation Office (GMAO), 2015: MERRA-2 tavgM_2d_slv_Nx: 2d, Monthly mean, Single-Level,
+  Assimilation, Single-Level Diagnostics V5.12.4. NASA GES DISC. https://doi.org/10.5067/AP1B0BA5PD2K ;
+  Gelaro, R. et al., 2017, J. Climate 30, 5419-5454.
+url_info: https://disc.gsfc.nasa.gov/datasets/M2TMNXSLV_5.12.4/summary

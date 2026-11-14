@@ -1,0 +1,14 @@
+id: greening-browning
+title: Greening Here, Browning There
+title_hi: यहाँ हरियाली, वहाँ सूखापन
+tagline: The planet is getting greener - but not everywhere
+tagline_hi: धरती हरी हो रही है - पर हर जगह नहीं
+question: "Where is vegetation getting greener and where is it browning - and does more CO₂ in the air explain both?"
+question_hi: "हरियाली कहाँ बढ़ रही है और कहाँ घट रही है - और क्या हवा में बढ़ती CO₂ दोनों को समझाती है?"
+spotlight: global
+type: auto_mirror
+source: modis_ndvi
+season: ANN
+region_a: {auto: positive}
+region_b: {auto: negative}
+drivers: [co2_mlo, gistemp_global, nino34]

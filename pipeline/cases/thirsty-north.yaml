@@ -1,0 +1,18 @@
+id: thirsty-north
+title: The Thirsty North
+title_hi: प्यासा उत्तर
+tagline: Same South Asia, opposite water tanks
+tagline_hi: एक ही दक्षिण एशिया, उल्टे पानी के भंडार
+question: Why is the ground under Punjab, Haryana and Rajasthan losing water while other parts of South Asia gain it?
+question_hi: पंजाब, हरियाणा और राजस्थान की ज़मीन का पानी क्यों घट रहा है, जबकि दक्षिण एशिया के दूसरे हिस्सों में बढ़ रहा है?
+spotlight: india
+type: mirror_regions
+source: grace_mascon
+season: ANN
+region_a: {name: North-West India, name_hi: उत्तर-पश्चिम भारत, bbox: [69, 24, 78.5, 32.5]}
+region_b: {auto: positive, within: [60, 5, 100, 40]}
+drivers: [gistemp_global, nino34]
+local_drivers:
+  - {source: gpcp_precip, season: ANN, label: Rainfall, label_hi: बारिश}
+suspect_en: groundwater pumping for irrigation is the prime suspect (as NASA GRACE scientists found, Rodell et al. 2009, Nature)
+suspect_hi: सिंचाई के लिए भूजल का दोहन मुख्य संदिग्ध है (NASA GRACE वैज्ञानिकों की खोज, Rodell et al. 2009, Nature)

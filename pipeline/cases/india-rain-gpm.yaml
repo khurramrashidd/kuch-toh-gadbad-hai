@@ -1,0 +1,14 @@
+id: india-rain-gpm
+title: One Monsoon, Two Indias (GPM)
+title_hi: एक मानसून, दो भारत (GPM)
+tagline: Satellite rain radar splits the subcontinent
+tagline_hi: उपग्रह की नज़र में उपमहाद्वीप दो हिस्सों में
+question: "In the monsoon months, is rain rising in one part of South Asia and falling in another - driven by the same oceans?"
+question_hi: "मानसून के महीनों में क्या दक्षिण एशिया के एक हिस्से में बारिश बढ़ और दूसरे में घट रही है - उन्हीं महासागरों की वजह से?"
+spotlight: india
+type: mirror_regions
+source: gpm_imerg
+season: JJAS
+region_a: {auto: positive, within: [60, 5, 100, 38]}
+region_b: {auto: negative, within: [60, 5, 100, 38]}
+drivers: [dmi_iod, nino34, gistemp_global]

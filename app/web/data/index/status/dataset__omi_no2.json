@@ -1,0 +1,1 @@
+{"status":"error","reason":"DetectiveError: omi_no2: no files matching '\\\\.(FLOAT\\\\.)?TIFF?$' at https://neo.gsfc.nasa.gov/archive/geotiff.float/AURA_NO2_M/","kind":"dataset","id":"omi_no2","_demo":false,"at":"2026-11-14T09:33:52+00:00"}

@@ -1,0 +1,32 @@
+# NSIDC Sea Ice Index v4 (NOAA@NSIDC, NASA-funded passive microwave record) - Antarctic monthly extent
+id: seaice_antarctic
+title: Antarctic sea ice extent (NSIDC Sea Ice Index)
+title_hi: अंटार्कटिक समुद्री बर्फ़ का फैलाव (NSIDC)
+short: Antarctic sea ice
+short_hi: अंटार्कटिक समुद्री बर्फ़
+gender_hi: f
+sphere: cryosphere
+mission: NASA Nimbus-7 SMMR, DMSP SSM/I-SSMIS, JAXA GCOM-W AMSR2 passive microwave (NSIDC G02135 v4)
+kind: index
+role: both
+access:
+  method: http
+  template: https://noaadata.apps.nsidc.org/NOAA/G02135/south/monthly/data/S_{month:02d}_extent_v4.0.csv
+  template_fallbacks:
+    - https://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/south/monthly/data/S_{month:02d}_extent_v4.0.csv
+    - https://noaadata.apps.nsidc.org/NOAA/G02135/south/monthly/data/S_{month:02d}_extent_v3.0.csv
+  template_vars: {month: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
+read:
+  variable: extent
+units: million km²
+trend_units: percent
+period: {start: 1979, end: auto}
+seasons: [ANN, FEB, SEP]
+min_coverage: 0.9
+palette: ice
+citation: >-
+  Fetterer, F., K. Knowles, W. N. Meier, M. Savoie, A. K. Windnagel, T. Stafford, 2025: Sea Ice Index,
+  Version 4 (G02135). NSIDC, Boulder, Colorado USA. https://doi.org/10.7265/a98x-0f50
+url_info: https://nsidc.org/data/g02135
+explain: "The area of ocean around Antarctica covered by floating ice."
+explain_hi: "अंटार्कटिका के आसपास तैरती बर्फ़ से ढका समुद्र का क्षेत्र।"

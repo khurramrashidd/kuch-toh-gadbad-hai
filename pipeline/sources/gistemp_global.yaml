@@ -1,0 +1,22 @@
+# Global mean temperature (NASA GISTEMP v4 table) - the main "suspect" for global warming
+id: gistemp_global
+title: Global average temperature (NASA GISTEMP v4)
+title_hi: पूरी पृथ्वी का औसत तापमान (NASA GISTEMP v4)
+short: Global warming
+short_hi: ग्लोबल वॉर्मिंग
+sphere: atmosphere
+mission: NASA GISS Surface Temperature Analysis v4
+kind: index
+role: driver
+access:
+  method: http
+  url: https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.csv
+read:
+  variable: value
+units: °C
+period: {start: 1900, end: auto}
+seasons: [ANN, JJAS, DJF]
+citation: "GISTEMP Team, 2026: GISS Surface Temperature Analysis (GISTEMP), version 4. NASA GISS. https://data.giss.nasa.gov/gistemp/"
+url_info: https://data.giss.nasa.gov/gistemp/
+explain: "The whole planet's average temperature compared with normal."
+explain_hi: "पूरी धरती का औसत तापमान, सामान्य की तुलना में।"

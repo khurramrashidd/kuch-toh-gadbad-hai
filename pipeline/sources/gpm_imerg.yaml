@@ -1,0 +1,33 @@
+# NASA GPM IMERG Final monthly 0.1 degree (named in the challenge statement). Streamed and averaged to 0.5 degree.
+id: gpm_imerg
+title: Rainfall from space (NASA GPM IMERG)
+title_hi: अंतरिक्ष से नापी बारिश (NASA GPM IMERG)
+short: Rainfall (GPM)
+short_hi: बारिश (GPM)
+gender_hi: f
+sphere: hydrosphere
+mission: NASA/JAXA Global Precipitation Measurement, IMERG Final Run V07 monthly
+kind: grid
+role: layer
+access:
+  method: earthaccess
+  short_name: GPM_3IMERGM
+  version: "07"
+  mode: stream
+  subset: {group: Grid, variables: [precipitation], coarsen: 5}
+read:
+  variable: precipitation
+convert: mm_hr_to_mm_day
+units: mm/day
+trend_units: percent
+period: {start: 2001, end: auto}
+seasons: [ANN, JJAS]
+analysis_grid: 1.0
+min_coverage: 0.75
+palette: precip
+explain: "Rain and snow measured by a fleet of satellites, every month since 2000."
+explain_hi: "उपग्रहों के बेड़े से नापी गई बारिश और बर्फ़बारी, सन 2000 से हर महीने।"
+citation: >-
+  Huffman, G. J., E. F. Stocker, D. T. Bolvin, E. J. Nelkin, Jackson Tan, 2023: GPM IMERG Final Precipitation L3
+  1 month 0.1 degree x 0.1 degree V07. NASA GES DISC. https://doi.org/10.5067/GPM/IMERG/3B-MONTH/07
+url_info: https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGM_07/summary

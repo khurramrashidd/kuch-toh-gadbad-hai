@@ -1,0 +1,30 @@
+# NASA GISS Surface Temperature Analysis v4 - 2x2 degree monthly anomalies (no login)
+id: gistemp_grid
+title: Surface temperature (NASA GISTEMP v4)
+title_hi: सतह का तापमान (NASA GISTEMP v4)
+short: Temperature
+short_hi: तापमान
+sphere: atmosphere
+mission: NASA GISS Surface Temperature Analysis v4 (GHCNv4 stations + ERSSTv5 oceans)
+kind: grid
+role: layer
+access:
+  method: http
+  url: https://data.giss.nasa.gov/pub/gistemp/gistemp1200_GHCNv4_ERSSTv5.nc.gz
+  decompress: gzip
+  fallback_urls:
+    - https://downloads.psl.noaa.gov/Datasets/gistemp/combined/1200km/air.2x2.1200.mon.anom.comb.nc
+read:
+  variable: [tempanomaly, air]
+units: °C
+period: {start: 1951, end: auto}
+seasons: [ANN, JJAS, DJF]
+min_coverage: 0.75
+palette: temp
+citation: >-
+  GISTEMP Team, 2026: GISS Surface Temperature Analysis (GISTEMP), version 4. NASA Goddard Institute
+  for Space Studies. https://data.giss.nasa.gov/gistemp/ ; Lenssen, N. et al., 2024: A NASA GISTEMPv4
+  observational uncertainty ensemble. J. Geophys. Res. Atmos., 129, e2023JD040179.
+url_info: https://data.giss.nasa.gov/gistemp/
+explain: "How much warmer or cooler each place is than its own normal, from weather stations and ships."
+explain_hi: "हर जगह अपने सामान्य से कितनी गर्म या ठंडी है - मौसम केंद्रों और जहाज़ों के माप से।"

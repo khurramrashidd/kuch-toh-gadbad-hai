@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "644835535010",
+    "project_id": "ktgh-nasa",
+    "storage_bucket": "ktgh-nasa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644835535010:android:aa79e282ee8fda79530ffb",
+        "android_client_info": {
+          "package_name": "com.ibtidaatech.kuchtohgadbadhai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "644835535010-be723ajjcefb5q9os44na4q5okbnu3r6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqQM2fW15_G7HVXms-YSON-kBHtoz8P3g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "644835535010-be723ajjcefb5q9os44na4q5okbnu3r6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

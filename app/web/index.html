@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kuch Toh Gadbad Hai - an Earth System Trend Detective. NASA satellite data, honest statistics: what is changing, where, how much, and is it significant? NASA Space Apps Challenge 2026.">
+  <meta name="theme-color" content="#F5F6FA">
+  <meta property="og:title" content="Kuch Toh Gadbad Hai - Earth System Trend Detective">
+  <meta property="og:description" content="Same cause, opposite trends. 40 years of NASA data for any place on Earth.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Kuch Toh Gadbad Hai">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>Kuch Toh Gadbad Hai · Earth Trend Detective</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    html, body { margin: 0; height: 100%; background: #F5F6FA; }
+    #splash { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+              font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #9A3412; gap: 14px; }
+    #splash img { width: 96px; height: 96px; animation: pulse 1.4s ease-in-out infinite; }
+    #splash small { color: #5F6B7E; }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  </style>
+</head>
+<body>
+  <div id="splash">
+    <img src="icons/Icon-192.png" alt="">
+    <div><b>Kuch Toh Gadbad Hai</b></div>
+    <small>Opening the case files… · केस फ़ाइलें खुल रही हैं…</small>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var s = document.getElementById('splash'); if (s) s.remove();
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

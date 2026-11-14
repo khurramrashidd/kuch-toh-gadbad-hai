@@ -1,0 +1,32 @@
+# Showcase places for "My Place, 40 years" (precomputed from NASA POWER; the app also works for ANY point live)
+places:
+  - {name: Delhi, name_hi: दिल्ली, country: India, lat: 28.61, lon: 77.21}
+  - {name: Mumbai, name_hi: मुंबई, country: India, lat: 19.08, lon: 72.88}
+  - {name: Kolkata, name_hi: कोलकाता, country: India, lat: 22.57, lon: 88.36}
+  - {name: Chennai, name_hi: चेन्नई, country: India, lat: 13.08, lon: 80.27}
+  - {name: Bengaluru, name_hi: बेंगलुरु, country: India, lat: 12.97, lon: 77.59}
+  - {name: Hyderabad, name_hi: हैदराबाद, country: India, lat: 17.39, lon: 78.49}
+  - {name: Jaipur, name_hi: जयपुर, country: India, lat: 26.91, lon: 75.79}
+  - {name: Lucknow, name_hi: लखनऊ, country: India, lat: 26.85, lon: 80.95}
+  - {name: Ludhiana, name_hi: लुधियाना, country: India, lat: 30.90, lon: 75.86}
+  - {name: Srinagar, name_hi: श्रीनगर, country: India, lat: 34.08, lon: 74.80}
+  - {name: Leh, name_hi: लेह, country: India, lat: 34.15, lon: 77.58}
+  - {name: Guwahati, name_hi: गुवाहाटी, country: India, lat: 26.14, lon: 91.74}
+  - {name: Patna, name_hi: पटना, country: India, lat: 25.59, lon: 85.14}
+  - {name: Bhopal, name_hi: भोपाल, country: India, lat: 23.26, lon: 77.41}
+  - {name: Ahmedabad, name_hi: अहमदाबाद, country: India, lat: 23.02, lon: 72.57}
+  - {name: Kochi, name_hi: कोच्चि, country: India, lat: 9.93, lon: 76.27}
+  - {name: Dhaka, name_hi: ढाका, country: Bangladesh, lat: 23.81, lon: 90.41}
+  - {name: Karachi, name_hi: कराची, country: Pakistan, lat: 24.86, lon: 67.01}
+  - {name: Dubai, name_hi: दुबई, country: UAE, lat: 25.20, lon: 55.27}
+  - {name: Cairo, name_hi: काहिरा, country: Egypt, lat: 30.04, lon: 31.24}
+  - {name: Lagos, name_hi: लागोस, country: Nigeria, lat: 6.52, lon: 3.38}
+  - {name: Nairobi, name_hi: नैरोबी, country: Kenya, lat: -1.29, lon: 36.82}
+  - {name: London, name_hi: लंदन, country: UK, lat: 51.51, lon: -0.13}
+  - {name: Moscow, name_hi: मॉस्को, country: Russia, lat: 55.76, lon: 37.62}
+  - {name: Beijing, name_hi: बीजिंग, country: China, lat: 39.90, lon: 116.40}
+  - {name: Tokyo, name_hi: टोक्यो, country: Japan, lat: 35.68, lon: 139.69}
+  - {name: Sydney, name_hi: सिडनी, country: Australia, lat: -33.87, lon: 151.21}
+  - {name: New York, name_hi: न्यूयॉर्क, country: USA, lat: 40.71, lon: -74.01}
+  - {name: Mexico City, name_hi: मेक्सिको सिटी, country: Mexico, lat: 19.43, lon: -99.13}
+  - {name: Sao Paulo, name_hi: साओ पाउलो, country: Brazil, lat: -23.55, lon: -46.63}

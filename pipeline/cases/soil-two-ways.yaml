@@ -1,0 +1,14 @@
+id: soil-two-ways
+title: Wetter Soil, Drier Soil
+title_hi: कहीं गीली मिट्टी, कहीं सूखी
+tagline: The same warming, two opposite answers in the ground
+tagline_hi: वही गर्मी, ज़मीन में दो उल्टे जवाब
+question: "Is topsoil getting wetter in some regions and drier in others - and does one global driver explain both?"
+question_hi: "क्या कुछ इलाक़ों में मिट्टी गीली और कुछ में सूखी हो रही है - और क्या एक ही वैश्विक वजह दोनों को समझाती है?"
+spotlight: global
+type: auto_mirror
+source: gldas_soil
+season: ANN
+region_a: {auto: positive}
+region_b: {auto: negative}
+drivers: [gistemp_global, nino34]

@@ -1,0 +1,23 @@
+# Atmospheric CO2 at Mauna Loa (NOAA GML)
+id: co2_mlo
+title: Carbon dioxide in the air (Mauna Loa)
+title_hi: हवा में कार्बन डाइऑक्साइड (मौना लोआ)
+short: CO₂
+short_hi: CO₂
+sphere: anthroposphere
+mission: NOAA Global Monitoring Laboratory, Mauna Loa Observatory
+kind: index
+role: driver
+access:
+  method: http
+  url: https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.csv
+read:
+  variable: average
+  fill_values: [-99.99, -9.99]
+units: ppm
+period: {start: 1959, end: auto}
+seasons: [ANN]
+citation: Lan, X., P. Tans and K. W. Thoning, NOAA GML Mauna Loa CO2 monthly mean data. https://gml.noaa.gov/ccgg/trends/
+url_info: https://gml.noaa.gov/ccgg/trends/
+explain: "Carbon dioxide in the air, measured on a Hawaiian mountain since 1958."
+explain_hi: "हवा में कार्बन डाइऑक्साइड, 1958 से हवाई के एक पहाड़ पर नापी जा रही।"

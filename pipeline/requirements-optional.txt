@@ -1,0 +1,6 @@
+# Extra readers - install only if a resource needs them
+rioxarray>=0.13     # GeoTIFF / COG (pulls rasterio + GDAL wheels)
+zarr>=2.14          # Zarr stores
+pyhdf>=0.10.5       # HDF4 (e.g. MODIS .hdf)
+cfgrib>=0.9         # GRIB (needs eccodes)
+

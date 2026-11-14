@@ -1,0 +1,32 @@
+# NASA GLDAS-2.1 Noah land model, monthly 1 degree (named in the challenge statement). Small files (~2 MB each).
+# The three gldas_* datasets share one download folder (raw_as).
+id: gldas_soil
+title: Soil moisture, top 10 cm (NASA GLDAS)
+title_hi: मिट्टी की नमी, ऊपरी 10 सेमी (NASA GLDAS)
+short: Soil moisture
+short_hi: मिट्टी की नमी
+gender_hi: f
+sphere: hydrosphere
+mission: NASA GLDAS-2.1 Noah land surface model (uses satellite + ground observations), monthly, 1 degree
+kind: grid
+role: layer
+access:
+  method: earthaccess
+  short_name: GLDAS_NOAH10_M
+  version: "2.1"
+  raw_as: gldas_noah10_m
+read:
+  variable: SoilMoi0_10cm_inst
+
+units: kg/m²
+period: {start: 2000, end: auto}
+seasons: [ANN, JJAS]
+min_coverage: 0.75
+palette: water
+good_direction: none
+explain: "How much water sits in the top 10 cm of soil - what crops and plants can drink."
+explain_hi: "मिट्टी की ऊपरी 10 सेमी परत में कितना पानी है - जो फ़सलें और पौधे पी सकते हैं।"
+citation: >-
+  Beaudoing, H. and M. Rodell, NASA/GSFC/HSL, 2020: GLDAS Noah Land Surface Model L4 monthly 1.0 x 1.0 degree V2.1.
+  NASA GES DISC. https://doi.org/10.5067/LWTYSMP3VM5Z ; Rodell, M. et al., 2004, Bull. Amer. Meteor. Soc. 85, 381-394.
+url_info: https://disc.gsfc.nasa.gov/datasets/GLDAS_NOAH10_M_2.1/summary

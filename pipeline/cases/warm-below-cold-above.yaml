@@ -1,0 +1,15 @@
+# Needs the optional merra2_temp_levels source (enabled: true)
+id: warm-below-cold-above
+title: Warm Below, Cold Above
+title_hi: नीचे गर्म, ऊपर ठंडा
+tagline: The fingerprint that points at CO₂, not the Sun
+tagline_hi: वो निशान जो सूरज की नहीं, CO₂ की ओर इशारा करता है
+question: If the Sun were heating Earth, the whole atmosphere would warm. Why is the air near the ground warming while the stratosphere cools?
+question_hi: अगर सूरज धरती को गर्म कर रहा होता, तो पूरा वायुमंडल गर्म होता। फिर ज़मीन के पास हवा गर्म और समताप मंडल ठंडा क्यों हो रहा है?
+spotlight: global
+type: mirror_levels
+source: merra2_temp_levels
+season: ANN
+band_a: {levels: [300, 1000], name: Lower atmosphere (troposphere), name_hi: निचला वायुमंडल (क्षोभमंडल)}
+band_b: {levels: [10, 50], name: Stratosphere, name_hi: समताप मंडल}
+drivers: [co2_mlo, gistemp_global]

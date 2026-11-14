@@ -1,0 +1,36 @@
+# OPTIONAL (big download, ~1-2 h): NASA MERRA-2 air temperature on pressure levels, streamed + subset.
+# Powers the "Warm Below, Cold Above" case (troposphere warms while the stratosphere cools = CO2 fingerprint).
+# Turn on with enabled: true once the main datasets work.
+id: merra2_temp_levels
+title: Air temperature by altitude (NASA MERRA-2)
+title_hi: ऊँचाई के हिसाब से हवा का तापमान (NASA MERRA-2)
+short: Air temperature
+short_hi: हवा का तापमान
+sphere: atmosphere
+mission: NASA GMAO MERRA-2 reanalysis (M2TMNPASM, monthly mean, pressure levels)
+kind: levels
+role: layer
+enabled: false
+access:
+  method: earthaccess
+  short_name: M2TMNPASM
+  version: "5.12.4"
+  mode: stream                       # read only the needed slices over the network
+  sample: {months: [1, 4, 7, 10]}    # 4 months per year keeps it ~10x smaller
+  subset:
+    variables: [T]
+    sel: {lev: [1000, 850, 700, 500, 300, 100, 70, 50, 30, 10]}
+    coarsen: 4
+read:
+  variable: T
+  levels: [1000, 850, 700, 500, 300, 100, 70, 50, 30, 10]
+convert: K_to_C
+units: °C
+period: {start: 1980, end: auto}
+seasons: [ANN]
+min_coverage: 0.5
+citation: >-
+  Global Modeling and Assimilation Office (GMAO), 2015: MERRA-2 tavgM_3d_asm_Np: 3d, Monthly mean,
+  Time-Averaged, Pressure-Level, Assimilation, Assimilated Meteorological Fields V5.12.4. NASA GES DISC.
+  https://doi.org/10.5067/2E096JV59PK7 ; Gelaro, R. et al., 2017, J. Climate 30, 5419-5454.
+url_info: https://disc.gsfc.nasa.gov/datasets/M2TMNPASM_5.12.4/summary

@@ -1,0 +1,14 @@
+id: monsoon-two-faces
+title: The Monsoon's Two Faces
+title_hi: मानसून के दो चेहरे
+tagline: One monsoon - wetter in some places, drier in others
+tagline_hi: एक ही मानसून - कहीं ज़्यादा बारिश, कहीं कम
+question: Is the June-September monsoon getting wetter in one part of India and drier in another - and is El Niño behind both?
+question_hi: क्या जून-सितंबर का मानसून भारत के एक हिस्से में ज़्यादा और दूसरे में कम हो रहा है - और क्या दोनों के पीछे एल नीनो है?
+spotlight: india
+type: mirror_regions
+source: gpcp_precip
+season: JJAS
+region_a: {auto: positive, within: [66, 5, 99, 36]}
+region_b: {auto: negative, within: [66, 5, 99, 36]}
+drivers: [nino34, dmi_iod, gistemp_global]

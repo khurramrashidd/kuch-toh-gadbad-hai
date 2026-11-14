@@ -1,0 +1,32 @@
+# From NASA Earth Observations (NEO) monthly floating-point GeoTIFFs: light files, no login.
+# NEO says these are "data-like" quick-look products, not the original science files - the app shows that note.
+id: modis_ndvi
+title: Greenness of vegetation (NASA MODIS NDVI)
+title_hi: हरियाली (NASA MODIS NDVI)
+short: Greenness (NDVI)
+short_hi: हरियाली (NDVI)
+gender_hi: f
+sphere: biosphere
+mission: NASA Terra MODIS vegetation index (MOD13A2), monthly, via NASA Earth Observations
+kind: grid
+role: layer
+access:
+  method: http_index
+  url: https://neo.gsfc.nasa.gov/archive/geotiff.float/MOD_NDVI_M/
+  match: '\.(FLOAT\.)?TIFF?$'
+read:
+  tiff_reader: pillow
+  coarsen_on_read: 10
+  fill_values: [99999.0]
+units: "NDVI"
+period: {start: 2000, end: auto}
+seasons: [ANN]
+analysis_grid: 1.0
+min_coverage: 0.7
+palette: green
+quality_note: "Quick-look product from NASA Earth Observations (NEO), not the original science files."
+explain: "How green the land looks from space: 0 is bare ground, near 1 is thick healthy plants."
+explain_hi: "अंतरिक्ष से ज़मीन कितनी हरी दिखती है: 0 मतलब नंगी ज़मीन, 1 के पास घनी स्वस्थ हरियाली।"
+citation: >-
+  Didan, K., 2021: MODIS/Terra Vegetation Indices 16-Day L3 Global 1km SIN Grid V061. NASA LP DAAC. https://doi.org/10.5067/MODIS/MOD13A2.061 ; imagery by NASA Earth Observations (NEO).
+url_info: https://neo.gsfc.nasa.gov/view.php?datasetId=MOD_NDVI_M

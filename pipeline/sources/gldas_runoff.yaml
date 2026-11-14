@@ -1,0 +1,32 @@
+# NASA GLDAS-2.1 Noah land model, monthly 1 degree (named in the challenge statement). Small files (~2 MB each).
+# The three gldas_* datasets share one download folder (raw_as).
+id: gldas_runoff
+title: Surface runoff to streams (NASA GLDAS)
+title_hi: नदियों की ओर बहता पानी (NASA GLDAS)
+short: Runoff
+short_hi: बहाव
+gender_hi: m
+sphere: hydrosphere
+mission: NASA GLDAS-2.1 Noah land surface model (uses satellite + ground observations), monthly, 1 degree
+kind: grid
+role: layer
+access:
+  method: earthaccess
+  short_name: GLDAS_NOAH10_M
+  version: "2.1"
+  raw_as: gldas_noah10_m
+read:
+  variable: Qs_acc
+convert: kg_m2_3h_to_mm_day
+units: mm/day
+period: {start: 2000, end: auto}
+seasons: [ANN, JJAS]
+min_coverage: 0.75
+palette: water
+good_direction: none
+explain: "Rain that runs off the surface into streams and rivers instead of soaking in - a stand-in for streamflow."
+explain_hi: "बारिश का वह पानी जो ज़मीन में न समाकर नालों-नदियों में बह जाता है - नदी के बहाव का संकेत।"
+citation: >-
+  Beaudoing, H. and M. Rodell, NASA/GSFC/HSL, 2020: GLDAS Noah Land Surface Model L4 monthly 1.0 x 1.0 degree V2.1.
+  NASA GES DISC. https://doi.org/10.5067/LWTYSMP3VM5Z ; Rodell, M. et al., 2004, Bull. Amer. Meteor. Soc. 85, 381-394.
+url_info: https://disc.gsfc.nasa.gov/datasets/GLDAS_NOAH10_M_2.1/summary

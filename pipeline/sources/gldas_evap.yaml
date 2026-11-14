@@ -1,0 +1,32 @@
+# NASA GLDAS-2.1 Noah land model, monthly 1 degree (named in the challenge statement). Small files (~2 MB each).
+# The three gldas_* datasets share one download folder (raw_as).
+id: gldas_evap
+title: Evaporation from land (NASA GLDAS)
+title_hi: ज़मीन से वाष्पीकरण (NASA GLDAS)
+short: Evaporation
+short_hi: वाष्पीकरण
+gender_hi: m
+sphere: hydrosphere
+mission: NASA GLDAS-2.1 Noah land surface model (uses satellite + ground observations), monthly, 1 degree
+kind: grid
+role: layer
+access:
+  method: earthaccess
+  short_name: GLDAS_NOAH10_M
+  version: "2.1"
+  raw_as: gldas_noah10_m
+read:
+  variable: Evap_tavg
+convert: kg_m2_s_to_mm_day
+units: mm/day
+period: {start: 2000, end: auto}
+seasons: [ANN, JJAS]
+min_coverage: 0.75
+palette: precip
+good_direction: none
+explain: "Water leaving the land as vapour, from soil and through plant leaves."
+explain_hi: "मिट्टी और पत्तियों से भाप बनकर उड़ने वाला पानी।"
+citation: >-
+  Beaudoing, H. and M. Rodell, NASA/GSFC/HSL, 2020: GLDAS Noah Land Surface Model L4 monthly 1.0 x 1.0 degree V2.1.
+  NASA GES DISC. https://doi.org/10.5067/LWTYSMP3VM5Z ; Rodell, M. et al., 2004, Bull. Amer. Meteor. Soc. 85, 381-394.
+url_info: https://disc.gsfc.nasa.gov/datasets/GLDAS_NOAH10_M_2.1/summary

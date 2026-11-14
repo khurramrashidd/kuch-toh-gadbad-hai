@@ -1,0 +1,35 @@
+# From NASA Earth Observations (NEO) monthly floating-point GeoTIFFs: light files, no login.
+# NEO says these are "data-like" quick-look products, not the original science files - the app shows that note.
+id: omi_no2
+title: Nitrogen dioxide pollution (NASA Aura OMI)
+title_hi: नाइट्रोजन डाइऑक्साइड प्रदूषण (NASA Aura OMI)
+short: NO₂ pollution
+short_hi: NO₂ प्रदूषण
+gender_hi: m
+sphere: anthroposphere
+mission: NASA Aura Ozone Monitoring Instrument, tropospheric NO2 monthly, via NASA Earth Observations
+kind: grid
+role: layer
+access:
+  method: http_index
+  url: https://neo.gsfc.nasa.gov/archive/geotiff.float/AURA_NO2_M/
+  match: '\.(FLOAT\.)?TIFF?$'
+read:
+  tiff_reader: pillow
+  coarsen_on_read: 10
+  fill_values: [99999.0]
+units: "NEO units"
+period: {start: 2005, end: auto}
+seasons: [ANN]
+analysis_grid: 1.0
+min_coverage: 0.7
+palette: air
+trend_units: percent
+known_transitions:
+  - {date: "2007-06", label: "OMI row anomaly begins", label_hi: "OMI पंक्ति-दोष शुरू"}
+quality_note: "Quick-look product from NASA Earth Observations (NEO), not the original science files."
+explain: "A gas from burning fuel in vehicles, power plants and factories; a fingerprint of human activity."
+explain_hi: "गाड़ियों, बिजलीघरों और कारख़ानों में ईंधन जलने से निकली गैस; इंसानी गतिविधि की छाप।"
+citation: >-
+  Krotkov, N. A., L. N. Lamsal, S. V. Marchenko et al., 2019: OMI/Aura NO2 Cloud-Screened Total and Tropospheric Column L3 Global Gridded 0.25 x 0.25 deg V3. NASA GES DISC. https://doi.org/10.5067/Aura/OMI/DATA3007 ; imagery by NASA Earth Observations (NEO).
+url_info: https://neo.gsfc.nasa.gov/view.php?datasetId=AURA_NO2_M

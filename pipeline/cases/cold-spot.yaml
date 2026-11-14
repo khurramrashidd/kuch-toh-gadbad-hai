@@ -1,0 +1,15 @@
+id: cold-spot
+title: The Cold Spot in a Warming World
+title_hi: गर्म होती दुनिया में एक ठंडा कोना
+tagline: Almost everywhere warms - except one patch of ocean
+tagline_hi: लगभग हर जगह गर्मी बढ़ी - सिवाय समुद्र के एक टुकड़े के
+question: Why has a patch of the North Atlantic, south of Greenland, barely warmed - or even cooled - since 1900?
+question_hi: ग्रीनलैंड के दक्षिण में उत्तरी अटलांटिक का एक हिस्सा 1900 से लगभग गर्म क्यों नहीं हुआ - या ठंडा क्यों हुआ?
+spotlight: global
+type: mirror_regions
+source: gistemp_grid
+season: ANN
+period: {start: 1900, end: auto}
+region_a: {name: North Atlantic cold spot, name_hi: उत्तरी अटलांटिक (ठंडा कोना), auto: negative, within: [-62, 40, -10, 66], bbox_fallback: [-50, 46, -20, 62]}
+region_b: {name: Surrounding North Atlantic, name_hi: उत्तरी अटलांटिक (आसपास), auto: positive, within: [-80, 20, 0, 70]}
+drivers: [gistemp_global]

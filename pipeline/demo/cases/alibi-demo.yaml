@@ -1,0 +1,13 @@
+# DEMO ONLY: a fake jump planted when GRACE-FO took over - shows the alibi check catching an artifact
+id: alibi-demo
+title: "[DEMO] The Suspicious Jump"
+title_hi: "[डेमो] संदिग्ध उछाल"
+tagline: A planted instrument artifact - the alibi check should catch it
+tagline_hi: जानबूझकर डाला गया उपकरण-दोष - बहाने की जाँच को इसे पकड़ना चाहिए
+spotlight: global
+type: mirror_regions
+source: grace_mascon
+season: ANN
+region_a: {name: "Eastern Brazil (planted jump)", name_hi: "पूर्वी ब्राज़ील (डाला गया उछाल)", bbox: [-56, -14, -44, -2]}
+region_b: {name: North-West India, name_hi: उत्तर-पश्चिम भारत, bbox: [69, 24, 78.5, 32.5]}
+drivers: [gistemp_global]

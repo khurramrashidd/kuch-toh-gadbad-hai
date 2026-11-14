@@ -1,0 +1,14 @@
+id: same-fuel-opposite-air
+title: Same Fuel, Opposite Air
+title_hi: एक ही ईंधन, उल्टी हवा
+tagline: Burning fuel everywhere - cleaner air in some places, dirtier in others
+tagline_hi: ईंधन हर जगह जलता है - कहीं हवा साफ़ हुई, कहीं गंदी
+question: Why is NO₂ pollution rising over South Asia while it falls over the US and Europe?
+question_hi: दक्षिण एशिया में NO₂ प्रदूषण क्यों बढ़ रहा है, जबकि अमेरिका और यूरोप में घट रहा है?
+spotlight: india
+type: mirror_regions
+source: omi_no2
+season: ANN
+region_a: {auto: positive, within: [66, 8, 92, 34]}
+region_b: {auto: negative, within: [-130, 25, 30, 60]}
+drivers: [co2_mlo]

@@ -1,0 +1,178 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:flutter/material.dart';
+
+import 'l10n/strings.dart';
+import 'models/models.dart';
+import 'services/ai_service.dart';
+import 'services/data_service.dart';
+import 'services/device_service.dart';
+import 'services/power_service.dart';
+
+/// Land outline + city list bundled in assets/geo (Natural Earth, public domain).
+class WorldAssets {
+  WorldAssets(this.rings, this.cities);
+  final List<List<List<double>>> rings; // [ring][point][lon, lat]
+  final List<City> cities;
+
+  static Future<WorldAssets> load() async {
+    final land = jsonDecode(await rootBundle.loadString('assets/geo/land_110m.json')) as Map;
+    final rings = <List<List<double>>>[];
+    for (final r in land['rings'] as List) {
+      rings.add([for (final p in r as List) [((p as List)[0] as num).toDouble(), (p[1] as num).toDouble()]]);
+    }
+    final cj = jsonDecode(await rootBundle.loadString('assets/geo/cities.json')) as Map;
+    final cities = <City>[];
+    for (final c in cj['cities'] as List) {
+      final l = c as List;
+      cities.add(City('${l[0]}', '${l[1]}', (l[2] as num).toDouble(), (l[3] as num).toDouble(), (l[4] as num).toInt()));
+    }
+    return WorldAssets(rings, cities);
+  }
+}
+
+class City {
+  City(this.name, this.country, this.lat, this.lon, this.pop);
+  final String name, country;
+  final double lat, lon;
+  final int pop;
+}
+
+class AppState extends ChangeNotifier {
+  AppState({required this.firebaseReady, required this.dataBaseUrl});
+  final bool firebaseReady;
+  final String dataBaseUrl;
+  final DeviceService device = DeviceService();
+  late final PowerService power = PowerService(device: device, firebaseReady: firebaseReady);
+  late final DataService data = DataService(dataBaseUrl);
+  AiService ai = AiService(firebaseReady: false, models: const []);
+
+  String lang = 'en';
+  bool dark = false; // light mode by default
+  bool expert = false; // Simple mode first; Scientist mode shows every number
+  int tab = 0;
+  ExploreRequest? exploreRequest; // set by the guided investigation, consumed by the Explore tab
+  Catalog? catalog;
+  WorldAssets? world;
+  String? error;
+  bool loading = true;
+  int dataVersion = 0; // bumps when new pipeline output is loaded; screens rebuild on it
+  bool live = false; // poll the catalog and reload when the pipeline publishes
+  Timer? _liveTimer;
+  final GlobalKey<ScaffoldMessengerState> messenger = GlobalKey<ScaffoldMessengerState>();
+
+  String t(String key) => tr(lang, key);
+
+  Future<void> init() async {
+    lang = await device.loadLang() ?? 'en';
+    dark = await device.loadDark();
+    expert = await device.loadBool('expert');
+    await load();
+    if (kDebugMode || (kIsWeb && Uri.base.queryParameters['live'] == '1')) setLive(true);
+  }
+
+  /// Fetch everything again (after a pipeline run).
+  Future<void> reload() async {
+    data.clear();
+    await load();
+  }
+
+  void setLive(bool on) {
+    live = on;
+    _liveTimer?.cancel();
+    _liveTimer = on ? Timer.periodic(const Duration(seconds: 12), (_) => _poll()) : null;
+    notifyListeners();
+  }
+
+  Future<void> _poll() async {
+    if (loading || dataBaseUrl.isEmpty) return;
+    try {
+      final g = await data.peekGeneratedAt();
+      if (g == null || g == catalog?.generatedAt) return;
+      await reload();
+      messenger.currentState?.showSnackBar(SnackBar(content: Text('${t('data_updated')} $g'), duration: const Duration(seconds: 3)));
+    } catch (_) {
+      // server busy or offline: try again next tick
+    }
+  }
+
+  Future<void> load() async {
+    loading = true;
+    error = null;
+    notifyListeners();
+    try {
+      world ??= await WorldAssets.load();
+      if (dataBaseUrl.isEmpty) {
+        throw DataException('No data URL: configure Firebase (run: flutterfire configure) or build with --dart-define=DATA_BASE_URL=...');
+      }
+      final before = catalog?.generatedAt;
+      catalog = await data.catalog(fresh: true);
+      if (catalog!.generatedAt != before) dataVersion++;
+      ai = AiService(firebaseReady: firebaseReady, models: catalog!.aiModels);
+    } catch (e) {
+      error = '$e';
+    }
+    loading = false;
+    notifyListeners();
+  }
+
+  void toggleLang() {
+    lang = lang == 'en' ? 'hi' : 'en';
+    device.saveLang(lang);
+    notifyListeners();
+  }
+
+  void toggleExpert() {
+    expert = !expert;
+    device.saveBool('expert', expert);
+    notifyListeners();
+  }
+
+  void goTab(int i) {
+    tab = i;
+    notifyListeners();
+  }
+
+  /// Open the Explore tab on a dataset / season / region.
+  void explore({String? dataset, String? season, List<double>? bbox, String? regionName}) {
+    exploreRequest = ExploreRequest(dataset: dataset, season: season, bbox: bbox, regionName: regionName);
+    tab = 3;
+    notifyListeners();
+  }
+
+  void toggleTheme() {
+    dark = !dark;
+    device.saveDark(dark);
+    notifyListeners();
+  }
+}
+
+class ExploreRequest {
+  ExploreRequest({this.dataset, this.season, this.bbox, this.regionName});
+  final String? dataset, season, regionName;
+  final List<double>? bbox; // west, south, east, north
+}
+
+class AppScope extends InheritedNotifier<AppState> {
+  const AppScope({super.key, required AppState state, required super.child}) : super(notifier: state);
+
+  static AppState of(BuildContext context) {
+    final scope = context.dependOnInheritedWidgetOfExactType<AppScope>();
+    assert(scope != null, 'AppScope missing');
+    return scope!.notifier!;
+  }
+
+  static AppState read(BuildContext context) {
+    final scope = context.getInheritedWidgetOfExactType<AppScope>();
+    return scope!.notifier!;
+  }
+}
+
+extension AppContext on BuildContext {
+  AppState get app => AppScope.of(this);
+  String get lang => AppScope.of(this).lang;
+  String t(String key) => tr(AppScope.of(this).lang, key);
+}
