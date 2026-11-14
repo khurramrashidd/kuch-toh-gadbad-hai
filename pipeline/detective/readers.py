@@ -619,8 +619,18 @@ def open_raw(paths: list[Path], cfg: dict) -> xr.Dataset:
         return _select_vars(open_one(paths[0], cfg), cfg)
     coarsen = int(cfg.get("coarsen_on_read", 1) or 1)
     parts = []
+    bad = 0
     for p in paths:
-        ds = _select_vars(open_one(p, cfg), cfg)
+        try:
+            ds = _select_vars(open_one(p, cfg), cfg)
+        except DetectiveError:
+            raise
+        except Exception as e:  # one damaged file must not sink a 300-file dataset
+            bad += 1
+            log.warning("  skipping unreadable file %s (%s)", p.name, str(e)[:100])
+            if bad > max(3, len(paths) // 5):
+                raise DetectiveError(f"too many unreadable files ({bad}); last: {p.name}: {e}") from e
+            continue
         if "time" not in ds.dims and "time" not in ds.coords:
             t = time_from_filename(p.name, cfg.get("time_regex"))
             if t is None:

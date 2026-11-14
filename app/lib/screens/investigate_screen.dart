@@ -181,7 +181,6 @@ class _InvestigateScreenState extends State<InvestigateScreen> {
             LayoutBuilder(builder: (context, cons) {
               final cols = cons.maxWidth > 760 ? 3 : 1;
               final w = (cons.maxWidth - (cols - 1) * 10) / cols;
-              final top = cat.cases.isNotEmpty ? cat.cases.first : null;
               return Wrap(spacing: 10, runSpacing: 10, children: [
                 _Door(
                     width: w,
@@ -195,13 +194,13 @@ class _InvestigateScreenState extends State<InvestigateScreen> {
                     title: tx(context, 'Can you beat the test?', 'क्या आप जाँच को हरा सकते हैं?'),
                     text: tx(context, '10 charts: real trend or just noise? A one-minute game.', '10 चार्ट: असली रुझान या सिर्फ़ शोर? एक मिनट का खेल।'),
                     onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const GameScreen()))),
-                if (top != null)
+                for (final cs in cat.cases.take(2))
                   _Door(
                       width: w,
                       icon: Icons.play_circle_outline,
-                      title: tx(context, 'Watch a demo case', 'डेमो केस देखें'),
-                      text: '${top.name(lang)} · ${tx(context, 'plays by itself in one minute', 'एक मिनट में खुद चलता है')}',
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => TourScreen(summary: top)))),
+                      title: '${tx(context, 'Watch a demo', 'डेमो देखें')}: ${cs.name(lang)}',
+                      text: tx(context, 'A real case that plays by itself in one minute.', 'एक असली केस जो एक मिनट में खुद चलता है।'),
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => TourScreen(summary: cs)))),
               ]);
             }),
             const SizedBox(height: 10),

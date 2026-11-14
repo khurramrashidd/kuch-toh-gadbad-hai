@@ -9,6 +9,7 @@ import '../services/ai_service.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import '../widgets/trend_chart.dart';
+import '../widgets/trend_report.dart';
 import '../widgets/world_map.dart';
 
 class CaseDetailScreen extends StatefulWidget {
@@ -292,6 +293,14 @@ class _RegionCard extends StatelessWidget {
           ),
           if (region.areaKm2 != null) StatTile(label: 'km²', value: fmtNum(region.areaKm2)),
         ]),
+        Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            tilePadding: EdgeInsets.zero,
+            title: Text(tx(context, 'All tests: t-test, Mann-Kendall, confidence interval', 'सभी जाँचें: t-टेस्ट, मान-केंडल, विश्वास अंतराल'), style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
+            children: [TrendReport(series: region.series, title: region.label(context.lang), unit: c.units, sourceNote: c.sourceTitle)],
+          ),
+        ),
       ]),
     );
   }

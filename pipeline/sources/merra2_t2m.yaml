@@ -5,7 +5,7 @@ title_hi: ज़मीन के पास हवा का तापमान (
 short: Air temperature (MERRA-2)
 short_hi: हवा का तापमान (MERRA-2)
 sphere: atmosphere
-mission: NASA GMAO MERRA-2 reanalysis (M2TMNXSLV, monthly mean)
+mission: NASA GMAO MERRA-2 reanalysis (M2TMNXSLV, monthly means of Jan, Apr, Jul, Oct)
 kind: grid
 role: layer
 access:
@@ -13,15 +13,16 @@ access:
   short_name: M2TMNXSLV
   version: "5.12.4"
   mode: stream
+  sample: {months: [1, 4, 7, 10]}   # one month per season: 4x fewer files to read over the network
   subset: {variables: [T2M], coarsen: 2}
 read:
   variable: T2M
 convert: K_to_C
 units: °C
 period: {start: 1980, end: auto}
-seasons: [ANN, JJAS, DJF]
+seasons: [ANN]
 analysis_grid: 2.0
-min_coverage: 0.75
+min_coverage: 0.3
 palette: temp
 known_transitions:
   - {date: "1998-07", label: "NOAA-15 AMSU data enter the model", label_hi: "NOAA-15 AMSU डेटा मॉडल में जुड़ा"}

@@ -7,4 +7,4 @@ moves in opposite directions in two places, and a test of whether one
 shared driver explains both.
 """
 
-__version__ = "1.2.0"
+__version__ = "1.2.4"

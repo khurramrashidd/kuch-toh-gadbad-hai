@@ -1,0 +1,1 @@
+{"status":"login","reason":"NASA Earthdata Login needed. Run: python -m detective login  once (free account: https://urs.earthdata.nasa.gov/users/new)","kind":"dataset","id":"gpm_imerg","_demo":false,"at":"2026-11-14T16:45:51+00:00"}

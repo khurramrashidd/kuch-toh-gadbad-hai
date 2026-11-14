@@ -1,4 +1,5 @@
-# NASA GPM IMERG Final monthly 0.1 degree (named in the challenge statement). Streamed and averaged to 0.5 degree.
+# NASA GPM IMERG Final monthly 0.1 degree (named in the challenge statement). Files are downloaded once (about 4-8 GB,
+# far faster than reading them over the network) and averaged to 0.5 degree while reading.
 id: gpm_imerg
 title: Rainfall from space (NASA GPM IMERG)
 title_hi: अंतरिक्ष से नापी बारिश (NASA GPM IMERG)
@@ -13,10 +14,11 @@ access:
   method: earthaccess
   short_name: GPM_3IMERGM
   version: "07"
-  mode: stream
-  subset: {group: Grid, variables: [precipitation], coarsen: 5}
+  threads: 6
 read:
+  group: Grid
   variable: precipitation
+  coarsen_on_read: 5
 convert: mm_hr_to_mm_day
 units: mm/day
 trend_units: percent

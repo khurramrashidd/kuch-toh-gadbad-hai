@@ -10,6 +10,7 @@ sphere: anthroposphere
 mission: NASA Aura Ozone Monitoring Instrument, tropospheric NO2 monthly, via NASA Earth Observations
 kind: grid
 role: layer
+enabled: false   # the NEO archive address no longer serves a file list (14 Nov 2026); bring these in through file upload
 access:
   method: http_index
   url: https://neo.gsfc.nasa.gov/archive/geotiff.float/AURA_NO2_M/

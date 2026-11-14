@@ -255,11 +255,61 @@ def fetch_earthaccess(src: Source, cfg: Config) -> list[Path]:
 
     if a.get("mode", "download") == "stream":
         return _stream_subset(granules, raw_dir, a.get("subset", {}))
-    files = earthaccess.download(granules, local_path=str(raw_dir), threads=int(a.get("threads", 4)))
-    paths = [Path(f) for f in files if f]
-    if not paths:  # earthaccess skips existing files and may return []
-        paths = sorted(p for p in raw_dir.iterdir() if p.is_file() and not p.name.endswith(".part"))
-    return [p for p in paths if not _is_sidecar(p)]
+    def data_files() -> list[Path]:
+        return sorted(p for p in raw_dir.iterdir() if p.is_file() and not p.name.endswith(".part") and not _is_sidecar(p)
+                      and not p.name.endswith(".subset.nc") and not p.name.startswith("_"))
+
+    # A dropped connection leaves half-written files behind; earthaccess would then skip them as "already there".
+    # So: delete broken files, download, check again - up to 4 rounds - and never hand a broken file to the reader.
+    want = len(granules)
+    for attempt in range(1, 5):
+        removed = _remove_broken(data_files())
+        if removed:
+            log.info("  %s: removed %d incomplete file(s) from an interrupted download", src.id, removed)
+        have = len(data_files())
+        if have >= want and not removed:
+            break
+        log.info("  %s: download round %d (%d of %d files on disk)", src.id, attempt, have, want)
+        try:
+            earthaccess.download(granules, local_path=str(raw_dir), threads=int(a.get("threads", 4)))
+        except Exception as e:  # network down etc. - keep what we have, try again
+            log.warning("  %s: download round %d stopped: %s", src.id, attempt, str(e)[:160])
+            time.sleep(20)
+    _remove_broken(data_files())
+    paths = data_files()
+    if not paths:
+        raise DetectiveError(f"{src.id}: nothing could be downloaded (check the internet connection), then run it again")
+    if len(paths) < want:
+        log.warning("  %s: %d of %d files downloaded; missing months are left empty. Run again with --refresh to fetch the rest.", src.id, len(paths), want)
+    return paths
+
+
+def _file_ok(p: Path) -> bool:
+    """True unless the file is a truncated HDF5 / NetCDF-4 (the usual result of a dropped connection)."""
+    try:
+        with open(p, "rb") as f:
+            head = f.read(8)
+        if head[:8] == b"\x89HDF\r\n\x1a\n":
+            import h5py
+
+            with h5py.File(p, "r") as h:
+                h.visit(lambda _name: None)  # walks every group: fails on a cut-off file
+            return True
+        return p.stat().st_size > 0
+    except Exception:
+        return False
+
+
+def _remove_broken(paths: list[Path]) -> int:
+    n = 0
+    for p in paths:
+        if not _file_ok(p):
+            try:
+                p.unlink()
+                n += 1
+            except OSError:
+                pass
+    return n
 
 
 _SIDECARS = (".md5", ".sha256", ".sha512", ".xml", ".cmr.json", ".dmrpp", ".txt", ".html", ".png", ".jpg")
@@ -350,25 +400,60 @@ def _stream_subset(granules: list, raw_dir: Path, subset: dict) -> list[Path]:
         else:
             todo.append((g, target))
     log.info("  streaming %d granules (%d cached)", len(todo), len(out))
-    for i, (g, target) in enumerate(todo, 1):
-        try:
-            fobj = earthaccess.open([g])[0]
-            with xr.open_dataset(fobj, engine="h5netcdf", decode_times=True, **({"group": subset["group"]} if subset.get("group") else {})) as ds:
-                if variables:
-                    ds = ds[[v for v in variables if v in ds]]
-                for dim, val in sel.items():
-                    if dim in ds.dims or dim in ds.coords:
-                        ds = ds.sel({dim: val}, method="nearest") if not isinstance(val, list) else ds.sel({dim: val})
-                if coarsen > 1:
-                    dims = {d: coarsen for d in ds.dims if d.lower() in ("lat", "lon", "latitude", "longitude", "y", "x")}
-                    if dims:
-                        ds = ds.coarsen(dims, boundary="trim").mean()
-                ds.load().to_netcdf(target)
-            out.append(target)
+    import logging as _logging
+
+    _logging.getLogger("earthaccess").setLevel(_logging.CRITICAL)  # its long tracebacks hide our own messages
+
+    def one(g, target) -> None:
+        fobj = earthaccess.open([g])[0]
+        with xr.open_dataset(fobj, engine="h5netcdf", decode_times=True, **({"group": subset["group"]} if subset.get("group") else {})) as ds:
+            if variables:
+                ds = ds[[v for v in variables if v in ds]]
+            for dim, val in sel.items():
+                if dim in ds.dims or dim in ds.coords:
+                    ds = ds.sel({dim: val}, method="nearest") if not isinstance(val, list) else ds.sel({dim: val})
+            if coarsen > 1:
+                dims = {d: coarsen for d in ds.dims if d.lower() in ("lat", "lon", "latitude", "longitude", "y", "x")}
+                if dims:
+                    ds = ds.coarsen(dims, boundary="trim").mean()
+            tmp = target.with_name("_" + target.name + ".part")
+            ds.load().to_netcdf(tmp)
+        os.replace(tmp, target)
+
+    # Two passes over what is missing; inside a pass every file gets 3 tries with a pause,
+    # and after 5 failures in a row we wait for the connection to come back instead of skipping everything.
+    failed_in_row = 0
+    for rnd in (1, 2):
+        left = [(g, t) for g, t in todo if not t.exists()]
+        if not left:
+            break
+        if rnd == 2:
+            log.info("  second pass for %d skipped file(s)", len(left))
+        for i, (g, target) in enumerate(left, 1):
+            ok = False
+            for attempt in range(3):
+                try:
+                    one(g, target)
+                    ok = True
+                    break
+                except Exception as e:
+                    last = str(e)[:140]
+                    time.sleep(8 * (attempt + 1))
+            if ok:
+                out.append(target)
+                failed_in_row = 0
+            else:
+                failed_in_row += 1
+                log.warning("    could not read %s (%s)", target.name.replace(".subset.nc", ""), last)
+                if failed_in_row >= 5:
+                    log.warning("    5 failures in a row: the connection looks down. Waiting 2 minutes, then carrying on...")
+                    time.sleep(120)
+                    failed_in_row = 0
             if i % 20 == 0:
-                log.info("    %d/%d", i, len(todo))
-        except Exception as e:
-            log.warning("    skip granule (%s)", e)
+                log.info("    %d/%d", i, len(left))
+    missing = [t for _, t in todo if not t.exists()]
+    if missing:
+        log.warning("  %d file(s) still missing; run the same command again to fetch only those", len(missing))
     return sorted(out)
 
 

@@ -2,8 +2,6 @@ analyzer:
   exclude:
     - build/**
     - web/data/**
-    - android/**
-    - web/**
   language:
     strict-casts: false
 linter:

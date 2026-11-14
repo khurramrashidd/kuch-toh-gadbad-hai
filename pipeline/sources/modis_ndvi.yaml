@@ -10,6 +10,7 @@ sphere: biosphere
 mission: NASA Terra MODIS vegetation index (MOD13A2), monthly, via NASA Earth Observations
 kind: grid
 role: layer
+enabled: false   # the NEO archive address no longer serves a file list (14 Nov 2026); bring these in through file upload
 access:
   method: http_index
   url: https://neo.gsfc.nasa.gov/archive/geotiff.float/MOD_NDVI_M/
