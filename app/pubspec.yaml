@@ -18,6 +18,7 @@ dependencies:
   url_launcher: ^6.3.0
   shared_preferences: ^2.5.0
   file_selector: ^1.0.0
+  video_player: ^2.9.0
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +29,7 @@ flutter:
   assets:
     - assets/geo/
     - assets/samples/
+    - assets/intro/
   fonts:
     - family: Nunito
       fonts:

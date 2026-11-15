@@ -18,7 +18,7 @@ read:
   variable: [tempanomaly, air]
 units: °C
 period: {start: 1951, end: auto}
-seasons: [ANN, JJAS, DJF]
+seasons: [ANN, JJAS, DJF, MAM, SON]
 min_coverage: 0.75
 palette: temp
 citation: >-

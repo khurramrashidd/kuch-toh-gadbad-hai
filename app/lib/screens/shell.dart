@@ -82,7 +82,12 @@ class Shell extends StatelessWidget {
 
     final content = Column(children: [
       if (app.catalog!.demo) const DemoBanner(),
-      Expanded(child: InShell(child: KeyedSubtree(key: ValueKey(app.dataVersion), child: IndexedStack(index: tab, children: pages)))),
+      Expanded(
+        child: Stack(children: [
+          Positioned.fill(child: InShell(child: KeyedSubtree(key: ValueKey(app.dataVersion), child: IndexedStack(index: tab, children: pages)))),
+          const Positioned(right: 12, bottom: 12, left: 12, child: Align(alignment: Alignment.bottomRight, child: RecapBanner())),
+        ]),
+      ),
     ]);
 
     if (phone) {
@@ -129,6 +134,9 @@ class Shell extends StatelessWidget {
                     ),
                   ),
                 ),
+              const SizedBox(height: 6),
+              const RecapTile(),
+              const ApkButton(tile: true),
               const Spacer(),
               Padding(
                 padding: const EdgeInsets.all(14),
@@ -450,6 +458,8 @@ class _Menu extends StatelessWidget {
               Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const GameScreen()));
             },
           ),
+          const RecapTile(),
+          const ApkButton(tile: true),
           label(tx(context, 'Settings', 'सेटिंग')),
           SwitchListTile(
             secondary: Icon(Icons.science_outlined, color: k.muted),

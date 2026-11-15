@@ -20,7 +20,7 @@ read:
 convert: kg_m2_3h_to_mm_day
 units: mm/day
 period: {start: 2000, end: auto}
-seasons: [ANN, JJAS]
+seasons: [ANN, JJAS, DJF, MAM, SON]
 min_coverage: 0.75
 palette: water
 good_direction: none

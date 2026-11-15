@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 const String kDataBaseUrlOverride = String.fromEnvironment('DATA_BASE_URL');
 
 const String kAppName = 'Kuch Toh Gadbad Hai';
-const String kAppVersion = '1.5.0';
+const String kAppVersion = '1.8.1';
 const String kTeamName = 'Xplorer';
 const String kTeamMembers = 'Khurram Rashid (Team Lead), Kinza Zahra';
 const String kLocalEvent = 'Panaji, Goa';

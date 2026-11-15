@@ -1,0 +1,1 @@
+Opening videos go in this folder: intro.mp4 (16:9, wide screens) and optionally intro_portrait.mp4 (9:16, upright phones). Without them the app opens normally.

@@ -1,1 +1,1 @@
-{"status":"ok","seconds":5.8,"layers":["ANN","JJAS"],"kind":"dataset","id":"gpcp_precip","_demo":false,"at":"2026-11-14T08:17:10+00:00"}
+{"status":"ok","seconds":15.2,"layers":["ANN","JJAS","DJF","MAM","SON"],"kind":"dataset","id":"gpcp_precip","_demo":false,"at":"2026-11-15T08:17:46+00:00"}

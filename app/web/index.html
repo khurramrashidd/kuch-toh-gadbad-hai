@@ -36,6 +36,61 @@
       var s = document.getElementById('splash'); if (s) s.remove();
     });
   </script>
+  <!-- Opening video (assets/intro/intro.mp4). If the file is missing or slow, this removes itself. -->
+  <div id="intro" style="position:fixed;inset:0;background:#000;z-index:20;display:none">
+    <video id="introVideo" playsinline muted preload="auto" style="width:100%;height:100%;object-fit:contain"></video>
+    <button id="introSkip" style="position:absolute;top:14px;right:14px;padding:9px 16px;border:0;border-radius:20px;background:#ffffffdd;font-weight:700;cursor:pointer">Skip</button>
+    <button id="introSound" style="position:absolute;top:14px;right:92px;padding:9px 16px;border:0;border-radius:20px;background:#ffffffdd;font-weight:700;cursor:pointer">Sound on</button>
+    <div style="position:absolute;left:14px;bottom:10px;color:#ffffffb3;font:12px sans-serif">AI-generated video (Google Gemini)</div>
+  </div>
+  <style>
+    #intro { transition: opacity 1.1s ease, transform 1.1s ease; }
+    #intro.leaving { opacity: 0; transform: scale(1.25); pointer-events: none; }   /* the video flies past the viewer */
+    @keyframes ktghArrive { from { opacity: 0; transform: scale(0.82); } to { opacity: 1; transform: scale(1); } }
+    .ktgh-arrive { animation: ktghArrive 1.2s cubic-bezier(.2,.7,.2,1) both; transform-origin: 50% 45%; }
+  </style>
+  <script>
+    (function () {
+      var box = document.getElementById('intro'), v = document.getElementById('introVideo'), soundBtn = document.getElementById('introSound');
+      var done = false, started = false;
+      function soundOn() { v.muted = false; if (soundBtn) { soundBtn.remove(); soundBtn = null; } }
+      function firstTouch() { if (!done && started) soundOn(); }
+      ['pointerdown', 'keydown', 'touchstart'].forEach(function (ev) { window.addEventListener(ev, firstTouch, { once: true, capture: true }); });
+      function end(quick) {
+        if (done) return; done = true;
+        if (!started || quick === true) { try { v.pause(); } catch (e) {} box.remove(); return; }
+        // the app arrives from far away while the video fades and its sound dips
+        var app = document.querySelector('flutter-view') || document.querySelector('flt-glass-pane');
+        if (app) { app.classList.add('ktgh-arrive'); setTimeout(function () { app.classList.remove('ktgh-arrive'); }, 1400); }
+        box.classList.add('leaving');
+        var fade = setInterval(function () { try { v.volume = Math.max(0, v.volume - 0.1); } catch (e) {} }, 100);
+        setTimeout(function () { clearInterval(fade); try { v.pause(); } catch (e) {} box.remove(); }, 1150);
+      }
+      var upright = window.innerHeight > window.innerWidth;
+      var files = upright ? ['intro_portrait.mp4', 'intro.mp4'] : ['intro.mp4', 'intro_portrait.mp4'], at = 0;
+      v.addEventListener('error', function () { at++; if (at < files.length) v.src = 'assets/assets/intro/' + files[at]; else end(true); });
+      v.addEventListener('ended', function () { end(); });
+      v.addEventListener('canplay', function () {
+        if (done || started) return;
+        started = true;
+        box.style.display = 'block';
+        // 1) try with sound; 2) browsers that block it get a silent start, and sound comes on at the first click, tap or key
+        v.muted = false;
+        var p = v.play();
+        if (p && p.then) {
+          p.then(function () { if (soundBtn) { soundBtn.remove(); soundBtn = null; } }).catch(function () {
+            v.muted = true;
+            var q = v.play(); if (q && q.catch) q.catch(function () { end(true); });
+          });
+        }
+      });
+      document.getElementById('introSkip').onclick = function (e) { e.stopPropagation(); end(); };
+      if (soundBtn) soundBtn.onclick = soundOn;
+      v.src = 'assets/assets/intro/' + files[0];
+      setTimeout(function () { if (!started) end(true); }, 5000);   // slow network: do not hold the visitor
+      setTimeout(function () { end(); }, 20000);
+    })();
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

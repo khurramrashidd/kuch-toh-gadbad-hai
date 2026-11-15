@@ -25,6 +25,12 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // App settings (for example the Android download link): everyone reads, only the admin writes.
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Team admin: full access (hackathon housekeeping).
     match /{document=**} {
       allow read, write: if isAdmin();

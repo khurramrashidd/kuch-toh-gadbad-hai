@@ -1,1 +1,1 @@
-{"status":"ok","seconds":758.0,"layers":["ANN","JJAS"],"kind":"dataset","id":"gldas_runoff","_demo":false,"at":"2026-11-14T08:04:29+00:00"}
+{"status":"ok","seconds":34.2,"layers":["ANN","JJAS","DJF","MAM","SON"],"kind":"dataset","id":"gldas_runoff","_demo":false,"at":"2026-11-15T08:17:03+00:00"}

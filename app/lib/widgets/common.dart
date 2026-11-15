@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
@@ -527,6 +528,93 @@ class VerdictBanner extends StatelessWidget {
         const SizedBox(height: 4),
         Text(sentence, style: const TextStyle(color: Colors.white, height: 1.35, fontSize: 14)),
       ]),
+    );
+  }
+}
+
+/// "Download Android app" button. Appears only on the website, and only once the admin has saved a link.
+class ApkButton extends StatelessWidget {
+  const ApkButton({super.key, this.tile = false});
+  final bool tile; // true: a row for the menu; false: a button
+  @override
+  Widget build(BuildContext context) {
+    final app = context.app;
+    if (!kIsWeb || app.apkUrl.isEmpty) return const SizedBox.shrink();
+    void go() => app.device.openUrl(app.apkUrl);
+    final label = tx(context, 'Download Android app', 'Android ऐप डाउनलोड करें');
+    if (tile) {
+      return ListTile(leading: IconBadge(Icons.android, color: context.k.confirmed, size: 36), title: Text(label), subtitle: Text(tx(context, 'APK file, free', 'APK फ़ाइल, मुफ़्त'), style: const TextStyle(fontSize: 12)), onTap: go);
+    }
+    return FilledButton.icon(
+      style: FilledButton.styleFrom(backgroundColor: context.k.confirmed, foregroundColor: Colors.white),
+      onPressed: go,
+      icon: const Icon(Icons.android),
+      label: Text(label),
+    );
+  }
+}
+
+/// "Watch the 30-second demo" entry for the menu and sidebar. Appears only once the admin has saved a link.
+class RecapTile extends StatelessWidget {
+  const RecapTile({super.key});
+  @override
+  Widget build(BuildContext context) {
+    final app = context.app;
+    if (app.demoUrl.isEmpty) return const SizedBox.shrink();
+    return ListTile(
+      leading: IconBadge(Icons.play_circle_fill, color: context.k.rising, size: 36),
+      title: Text(tx(context, 'Watch the 30-second demo', '30-सेकंड डेमो देखें')),
+      subtitle: Text(tx(context, 'A quick recap of the app', 'ऐप की झटपट झलक'), style: const TextStyle(fontSize: 12)),
+      onTap: () => app.device.openUrl(app.demoUrl),
+    );
+  }
+}
+
+/// Floating banner for the 30-second recap. Shown only when a link exists and until the visitor closes it.
+class RecapBanner extends StatelessWidget {
+  const RecapBanner({super.key});
+  @override
+  Widget build(BuildContext context) {
+    final app = context.app;
+    if (app.demoUrl.isEmpty || app.recapDismissed) return const SizedBox.shrink();
+    final k = context.k;
+    return FadeSlideIn(
+      delayMs: 600,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 340),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            gradient: LinearGradient(colors: [k.rising, Color.lerp(k.rising, const Color(0xFF7A1E00), 0.35)!]),
+            boxShadow: [BoxShadow(color: k.rising.withValues(alpha: 0.40), blurRadius: 16, offset: const Offset(0, 6))],
+          ),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Flexible(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () => app.device.openUrl(app.demoUrl),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    const Icon(Icons.play_circle_fill, color: Colors.white, size: 26),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(tx(context, 'Watch the 30-second demo', '30-सेकंड डेमो देखें'),
+                          maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontFamily: kHeadFont, fontSize: 14.5)),
+                    ),
+                  ]),
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: tx(context, 'Close', 'बंद करें'),
+              onPressed: () => AppScope.read(context).dismissRecap(),
+              icon: const Icon(Icons.close, color: Colors.white, size: 18),
+            ),
+          ]),
+        ),
+      ),
     );
   }
 }

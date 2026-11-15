@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 /// BigDataCloud's free client-side reverse geocoder first, OpenStreetMap Nominatim as back-up.
 /// Results are cached per ~5 km box so moving the pointer does not flood the services.
 class PlaceNameService {
+  /// One shared instance, so every map in the app uses the same cache.
+  static final PlaceNameService instance = PlaceNameService();
   final Map<String, String> _cache = {};
   DateTime _lastNominatim = DateTime.fromMillisecondsSinceEpoch(0);
 

@@ -123,6 +123,7 @@ class _LabScreenState extends State<LabScreen> {
                   tx(context,
                       'AI-assisted project. (1) Code, documentation and the synthetic sample/demo files were written with the help of an AI assistant (Anthropic Claude) and reviewed by the team. '
                           '(2) Inside the app, a language model (Google Gemini, with Groq- or OpenRouter-hosted open models as back-ups) writes the "Detective\'s notes" and the "what else to look at" suggestions; these are always labelled as AI. '
+                          '(3) The short opening video and its sound were generated with Google Gemini and carry an "AI-generated" label. '
                           'No verdict, number, map or chart is produced by AI: they are computed from the cited data with the published methods above. No NASA logos or mission emblems are used.',
                       'एआई-सहायित परियोजना। (1) कोड, दस्तावेज़ और बनावटी नमूना/डेमो फ़ाइलें एआई सहायक (Anthropic Claude) की मदद से लिखी गईं और टीम ने जाँचीं। '
                           '(2) ऐप में Google Gemini (Firebase AI Logic) "जासूस के नोट्स" और "और क्या देखें" सुझाव लिखता है; इन पर हमेशा एआई का लेबल रहता है। '
@@ -285,6 +286,49 @@ class _AdminPanel extends StatefulWidget {
 class _AdminPanelState extends State<_AdminPanel> {
   String? _msg;
   bool _busy = false;
+  final TextEditingController _apk = TextEditingController();
+  final TextEditingController _demo = TextEditingController();
+  bool _apkFilled = false;
+
+  @override
+  void dispose() {
+    _apk.dispose();
+    _demo.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveDemo() async {
+    final url = _demo.text.trim();
+    if (url.isNotEmpty && !url.startsWith('https://')) {
+      setState(() => _msg = 'The link must start with https://');
+      return;
+    }
+    setState(() => _busy = true);
+    try {
+      await AppScope.read(context).saveDemoUrl(url);
+      _msg = url.isEmpty ? 'Demo video link removed' : 'Demo video link saved';
+    } catch (e) {
+      _msg = '$e';
+    }
+    if (mounted) setState(() => _busy = false);
+  }
+
+  Future<void> _saveApk() async {
+    final url = _apk.text.trim();
+    if (url.isNotEmpty && !url.startsWith('https://')) {
+      setState(() => _msg = 'The link must start with https://');
+      return;
+    }
+    setState(() => _busy = true);
+    try {
+      await AppScope.read(context).saveApkUrl(url);
+      _apk.text = AppScope.read(context).apkUrl;
+      _msg = url.isEmpty ? 'Android download link removed' : 'Android download link saved';
+    } catch (e) {
+      _msg = '$e';
+    }
+    if (mounted) setState(() => _busy = false);
+  }
 
   User? get _user {
     try {
@@ -332,6 +376,11 @@ class _AdminPanelState extends State<_AdminPanel> {
     final u = _user;
     final email = u?.email;
     final admin = email != null && email.toLowerCase() == kAdminEmail;
+    if (admin && !_apkFilled) {
+      _apkFilled = true;
+      _apk.text = context.app.apkUrl;
+      _demo.text = context.app.demoUrl;
+    }
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -350,7 +399,27 @@ class _AdminPanelState extends State<_AdminPanel> {
                 child: Text(tx(context, 'Sign out', 'साइन-आउट'))),
           ]),
         ],
-        if (_msg != null) Text(_msg!, style: Theme.of(context).textTheme.bodySmall),
+        if (admin) ...[
+          const SizedBox(height: 10),
+          Text(tx(context, 'Android app download link (Google Drive or GitHub release). Shown as a "Download Android app" button on the website.', 'Android ऐप का डाउनलोड लिंक (Google Drive या GitHub)। वेबसाइट पर "Android ऐप डाउनलोड करें" बटन के रूप में दिखेगा।'),
+              style: Theme.of(context).textTheme.bodySmall),
+          const SizedBox(height: 6),
+          Row(children: [
+            Expanded(child: TextField(controller: _apk, keyboardType: TextInputType.url, decoration: const InputDecoration(hintText: 'https://…', isDense: true))),
+            const SizedBox(width: 8),
+            FilledButton(onPressed: _busy ? null : _saveApk, child: Text(tx(context, 'Save', 'सहेजें'))),
+          ]),
+          const SizedBox(height: 12),
+          Text(tx(context, '30-second demo video link (YouTube or Google Drive). Adds "Watch the 30-second demo" to the menu and a floating banner.', '30-सेकंड डेमो वीडियो लिंक (YouTube या Google Drive)। मेनू में "30-सेकंड डेमो देखें" और एक तैरता बैनर जुड़ेगा।'),
+              style: Theme.of(context).textTheme.bodySmall),
+          const SizedBox(height: 6),
+          Row(children: [
+            Expanded(child: TextField(controller: _demo, keyboardType: TextInputType.url, decoration: const InputDecoration(hintText: 'https://…', isDense: true))),
+            const SizedBox(width: 8),
+            FilledButton(onPressed: _busy ? null : _saveDemo, child: Text(tx(context, 'Save', 'सहेजें'))),
+          ]),
+        ],
+        if (_msg != null) Padding(padding: const EdgeInsets.only(top: 6), child: Text(_msg!, style: Theme.of(context).textTheme.bodySmall)),
       ]),
     );
   }

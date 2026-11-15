@@ -34,7 +34,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   String? _regionName;
   Future<(Series, int)?>? _regionSeries;
   List<double>? _pendingBox;
-  final PlaceNameService _places = PlaceNameService();
+  final PlaceNameService _places = PlaceNameService.instance;
   String? _placeLabel;
   Timer? _hoverTimer;
   int _mapPointers = 0; // fingers on the map: page scrolling is paused so pinch and drag reach the map
@@ -266,8 +266,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
         : all.where((d) => d.sphere == _sphere).toList();
     final ds = all.firstWhere((d) => d.id == _dsId, orElse: () => all.first);
     final filter = CellFilter(direction: _direction, minVerdict: _minVerdict);
-    final phone = MediaQuery.sizeOf(context).width < 700;
-    final showFilters = !phone || _showFilters;
+    final showFilters = _showFilters;
     final wide = MediaQuery.sizeOf(context).width >= 1000;
     String sphereName(String s) => switch (s) {
       'atmosphere' => tx(context, 'Air', 'हवा'),
@@ -300,20 +299,25 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ],
               ),
               const SizedBox(height: 6),
-              if (phone)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: () =>
-                        setState(() => _showFilters = !_showFilters),
-                    icon: Icon(
-                      _showFilters ? Icons.expand_less : Icons.tune,
-                      size: 18,
-                    ),
-                    label: Text(
-                      '${tx(context, 'Filters', 'फ़िल्टर')}${filter.active || _sphere != 'all' ? ' •' : ''}',
-                    ),
+              Row(children: [
+                FilledButton.tonalIcon(
+                  onPressed: () => setState(() => _showFilters = !_showFilters),
+                  icon: Icon(_showFilters ? Icons.expand_less : Icons.tune, size: 18),
+                  label: Text('${tx(context, _showFilters ? 'Hide filters' : 'Filters', _showFilters ? 'फ़िल्टर छिपाएँ' : 'फ़िल्टर')}${filter.active || _sphere != 'all' ? ' •' : ''}'),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    tx(context, 'Pick a variable and season below. Filters narrow what the map shows.', 'नीचे चीज़ और मौसम चुनें। फ़िल्टर नक़्शे को छाँटते हैं।'),
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
+                ),
+              ]),
+              const SizedBox(height: 6),
+              if (showFilters)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(tx(context, 'EARTH SPHERE', 'पृथ्वी का हिस्सा'), style: Theme.of(context).textTheme.labelSmall),
                 ),
               // sphere filter
               if (showFilters)
@@ -340,6 +344,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ),
               const SizedBox(height: 6),
               // variable
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(tx(context, 'VARIABLE', 'क्या देखें'), style: Theme.of(context).textTheme.labelSmall),
+              ),
               Wrap(
                 spacing: 6,
                 runSpacing: 6,
@@ -359,6 +367,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
               ),
               const SizedBox(height: 6),
               // season + view toggles
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(tx(context, 'SEASON', 'मौसम'), style: Theme.of(context).textTheme.labelSmall),
+              ),
               Wrap(
                 spacing: 6,
                 runSpacing: 6,
@@ -374,6 +386,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
               ),
               const SizedBox(height: 6),
               // verdict / direction filters
+              if (showFilters)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(tx(context, 'SHOW ONLY', 'सिर्फ़ यह दिखाएँ'), style: Theme.of(context).textTheme.labelSmall),
+                ),
               if (showFilters)
                 Wrap(
                   spacing: 6,
@@ -415,6 +432,18 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         onSelected: (v) => setState(() => _stipple = v),
                       ),
                   ],
+                ),
+              if (showFilters)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: FilledButton.icon(
+                      onPressed: () => setState(() => _showFilters = false),
+                      icon: const Icon(Icons.check, size: 18),
+                      label: Text(tx(context, 'Apply on map', 'नक़्शे पर लगाएँ')),
+                    ),
+                  ),
                 ),
               const SizedBox(height: 8),
               Text(

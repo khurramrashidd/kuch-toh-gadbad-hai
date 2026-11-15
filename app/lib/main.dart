@@ -5,6 +5,7 @@ import 'app_state.dart';
 import 'config.dart';
 import 'firebase_options.dart';
 import 'screens/shell.dart';
+import 'widgets/intro_gate.dart';
 import 'theme.dart';
 
 Future<void> main() async {
@@ -43,7 +44,7 @@ class KtghApp extends StatelessWidget {
           theme: _lightTheme,
           darkTheme: _darkTheme,
           themeMode: state.dark ? ThemeMode.dark : ThemeMode.light, // light by default, dark on toggle
-          home: const Shell(),
+          home: const IntroGate(child: Shell()),
         ),
       ),
     );

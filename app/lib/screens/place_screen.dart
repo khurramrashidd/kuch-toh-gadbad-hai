@@ -256,7 +256,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
               final cols = cons.maxWidth > 700 ? 2 : 1;
               final w = (cons.maxWidth - (cols - 1) * 12) / cols;
               return Wrap(spacing: 12, runSpacing: 12, children: [
-                for (final v in r.variables) SizedBox(width: w, child: _VariableCard(v: v)),
+                for (final v in r.variables) SizedBox(width: w, child: _VarTile(v: v)),
               ]);
             }),
             const SizedBox(height: 10),
@@ -288,6 +288,52 @@ class _PlaceScreenState extends State<PlaceScreen> {
     lines.add('— Kuch Toh Gadbad Hai · NASA POWER data · NASA Space Apps 2026');
     return lines.join('\n');
   }
+}
+
+/// One variable: the full report in the page, with a button that opens it alone in a pop-up.
+class _VarTile extends StatelessWidget {
+  const _VarTile({required this.v});
+  final PlaceVariable v;
+  @override
+  Widget build(BuildContext context) {
+    final k = context.k;
+    final lang = context.lang;
+    void open() => showDialog<void>(
+          context: context,
+          builder: (ctx) => Dialog(
+            insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 18),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 780),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 6, 0),
+                  child: Row(children: [
+                    Expanded(child: Text(v.name(lang), style: Theme.of(ctx).textTheme.titleLarge)),
+                    IconButton(tooltip: tx(ctx, 'Close', 'बंद करें'), onPressed: () => Navigator.of(ctx).pop(), icon: const Icon(Icons.close)),
+                  ]),
+                ),
+                Flexible(child: SingleChildScrollView(padding: const EdgeInsets.fromLTRB(12, 4, 12, 16), child: _VariableCard(v: v))),
+              ]),
+            ),
+          ),
+        );
+    // Full report shown in the page as before, plus a button to open just this one larger.
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [
+        Expanded(child: VerdictChip(v.trend.verdict).alignLeft()),
+        TextButton.icon(
+          onPressed: open,
+          icon: Icon(Icons.open_in_full, size: 18, color: k.accent),
+          label: Text(tx(context, 'Open larger', 'बड़ा खोलें')),
+        ),
+      ]),
+      _VariableCard(v: v),
+    ]);
+  }
+}
+
+extension on Widget {
+  Widget alignLeft() => Align(alignment: Alignment.centerLeft, child: this);
 }
 
 class _VariableCard extends StatelessWidget {

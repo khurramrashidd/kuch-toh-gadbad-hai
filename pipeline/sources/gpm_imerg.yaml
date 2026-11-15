@@ -23,7 +23,7 @@ convert: mm_hr_to_mm_day
 units: mm/day
 trend_units: percent
 period: {start: 2001, end: auto}
-seasons: [ANN, JJAS]
+seasons: [ANN, JJAS, DJF, MAM, SON]
 analysis_grid: 1.0
 min_coverage: 0.75
 palette: precip

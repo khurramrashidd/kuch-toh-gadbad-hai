@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
+import '../services/place_name_service.dart';
 import '../theme.dart';
 
 /// A region drawn on the map (mirror-case side, or a highlighted box).
@@ -62,8 +64,26 @@ class _WorldMapState extends State<WorldMap> {
   Size? _lastSize;
   List<double>? _lastFocus;
 
+  // NASA Blue Marble satellite picture (GIBS) as the base map; the drawn map stays underneath as a fallback.
+  bool _sat = true;
+  static String _satUrl(int w) => 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap'
+      '&LAYERS=BlueMarble_ShadedRelief_Bathymetry&STYLES=&FORMAT=image/jpeg&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=$w&HEIGHT=${w ~/ 2}';
+
+  // Place name under the pointer (or the last tap), e.g. "Panvel, Maharashtra, India, Asia".
+  String? _place;
+  Timer? _placeTimer;
+  void _lookup(double lat, double lon, {bool now = false}) {
+    _placeTimer?.cancel();
+    final lang = context.app.lang;
+    _placeTimer = Timer(Duration(milliseconds: now ? 0 : 300), () async {
+      final name = await PlaceNameService.instance.name(lat, lon, lang: lang);
+      if (mounted && name != _place) setState(() => _place = name);
+    });
+  }
+
   @override
   void dispose() {
+    _placeTimer?.cancel();
     _tc.dispose();
     super.dispose();
   }
@@ -129,26 +149,37 @@ class _WorldMapState extends State<WorldMap> {
               boundaryMargin: EdgeInsets.zero,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTapUp: widget.onTap == null
-                    ? null
-                    : (d) {
-                        final p = d.localPosition;
-                        final lon = p.dx / size.width * 360 - 180;
-                        final lat = 90 - p.dy / size.height * 180;
-                        widget.onTap!(lat.clamp(-90.0, 90.0), lon.clamp(-180.0, 180.0));
-                      },
+                onTapUp: (d) {
+                  final p = d.localPosition;
+                  final lon = (p.dx / size.width * 360 - 180).clamp(-180.0, 180.0);
+                  final lat = (90 - p.dy / size.height * 180).clamp(-90.0, 90.0);
+                  _lookup(lat, lon, now: true);
+                  widget.onTap?.call(lat, lon);
+                },
                 child: MouseRegion(
-                  onHover: widget.onHover == null
-                      ? null
-                      : (e) {
-                          final p = e.localPosition;
-                          widget.onHover!((90 - p.dy / size.height * 180).clamp(-90.0, 90.0), (p.dx / size.width * 360 - 180).clamp(-180.0, 180.0));
-                        },
+                  onHover: (e) {
+                    final p = e.localPosition;
+                    final lat = (90 - p.dy / size.height * 180).clamp(-90.0, 90.0), lon = (p.dx / size.width * 360 - 180).clamp(-180.0, 180.0);
+                    _lookup(lat, lon);
+                    widget.onHover?.call(lat, lon);
+                  },
                   child: SizedBox(
                   width: size.width,
                   height: size.height,
                   child: Stack(children: [
                     Positioned.fill(child: CustomPaint(painter: _LandPainter(world?.rings ?? const [], k))),
+                    if (_sat) ...[
+                      Positioned.fill(
+                        child: Image.network(
+                          _satUrl(size.width >= 700 ? 4096 : 2048),
+                          fit: BoxFit.fill,
+                          gaplessPlayback: true,
+                          filterQuality: FilterQuality.medium,
+                          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                        ),
+                      ),
+                      Positioned.fill(child: CustomPaint(painter: _LandPainter(world?.rings ?? const [], k, outline: true))),
+                    ],
                     if (widget.layerPainter != null) Positioned.fill(child: CustomPaint(painter: widget.layerPainter)),
                     if (widget.layerUrl != null && widget.layerPainter == null)
                       Positioned.fromRect(
@@ -173,6 +204,34 @@ class _WorldMapState extends State<WorldMap> {
                   ]),
                   ),
                 ),
+              ),
+            ),
+            if (_place != null)
+              Positioned(
+                left: 8,
+                top: 8,
+                right: 56,
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: IgnorePointer(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(color: const Color(0xE60B1F3A), borderRadius: BorderRadius.circular(20)),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        const Icon(Icons.place, size: 15, color: Color(0xFFFFC078)),
+                        const SizedBox(width: 5),
+                        Flexible(child: Text(_place!, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w700))),
+                      ]),
+                    ),
+                  ),
+                ),
+              ),
+            Positioned(
+              right: 6,
+              top: 6,
+              child: Tooltip(
+                message: _sat ? 'Satellite view (NASA Blue Marble). Tap for the plain map.' : 'Plain map. Tap for the NASA satellite view.',
+                child: _ZoomBtn(icon: _sat ? Icons.satellite_alt : Icons.map_outlined, onTap: () => setState(() => _sat = !_sat)),
               ),
             ),
             Positioned(
@@ -225,11 +284,21 @@ Path _landPath(List<List<List<double>>> rings, Size size) {
 }
 
 class _LandPainter extends CustomPainter {
-  _LandPainter(this.rings, this.p);
+  _LandPainter(this.rings, this.p, {this.outline = false});
+  final bool outline; // only the coastlines, drawn over the satellite picture
   final List<List<List<double>>> rings;
   final Palette p;
   @override
   void paint(Canvas canvas, Size size) {
+    if (outline) {
+      canvas.drawPath(
+          _landPath(rings, size),
+          Paint()
+            ..color = Colors.white.withValues(alpha: 0.55)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 0.5);
+      return;
+    }
     canvas.drawRect(Offset.zero & size, Paint()..color = p.ocean);
     final grat = Paint()
       ..color = p.grid.withValues(alpha: 0.7)
@@ -251,7 +320,7 @@ class _LandPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _LandPainter old) => old.rings != rings || old.p != p;
+  bool shouldRepaint(covariant _LandPainter old) => old.rings != rings || old.p != p || old.outline != outline;
 }
 
 class _CoastPainter extends CustomPainter {

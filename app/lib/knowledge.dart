@@ -18,6 +18,10 @@ const kTopics = <Topic>[
   Topic('green', Icons.grass, 'Greenery and crops', 'हरियाली और फ़सल', ['ndvi', 'green', 'soil'], ['soil', 'rain']),
   Topic('air', Icons.air, 'Air quality', 'हवा की गुणवत्ता', ['no2', 'co2', 'air', 'aerosol'], ['humid']),
   Topic('ice', Icons.ac_unit, 'Ice and snow', 'बर्फ़', ['ice', 'snow'], ['temp']),
+  Topic('rivers', Icons.water, 'Rivers and floods', 'नदियाँ और बाढ़', ['runoff', 'precip', 'imerg'], ['rain', 'monsoon']),
+  Topic('drought', Icons.wb_sunny, 'Drought and dry soil', 'सूखा और सूखी मिट्टी', ['soil', 'evap', 'grace'], ['soil', 'rain']),
+  Topic('warming', Icons.public, 'Global warming', 'वैश्विक तापन', ['gistemp', 't2m', 'temp'], ['temp', 'hotdays']),
+  Topic('farm', Icons.agriculture, 'Farming weather', 'खेती का मौसम', ['precip', 'soil', 'evap', 't2m'], ['rain', 'soil', 'temp']),
 ];
 
 class Preset {
@@ -27,6 +31,7 @@ class Preset {
 }
 
 const kPresets = <Preset>[
+  Preset('Whole world', 'पूरी दुनिया', [-180, -89, 180, 89], 'global', 'वैश्विक'),
   Preset('India', 'भारत', [68, 8, 97, 35], 'country', 'देश'),
   Preset('North-West India', 'उत्तर-पश्चिम भारत', [69, 24, 78.5, 32.5], 'farm belt', 'कृषि क्षेत्र'),
   Preset('Goa and Konkan coast', 'गोवा और कोंकण तट', [72.5, 14, 75, 18.5], 'coast', 'तट'),
@@ -45,6 +50,25 @@ const kPresets = <Preset>[
   Preset('Australia', 'ऑस्ट्रेलिया', [114, -38, 153, -12], 'continent', 'महाद्वीप'),
   Preset('Europe', 'यूरोप', [-10, 36, 30, 60], 'continent', 'महाद्वीप'),
   Preset('Arctic', 'आर्कटिक', [-180, 66, 180, 88], 'polar', 'ध्रुवीय'),
+  Preset('Antarctica', 'अंटार्कटिका', [-180, -88, 180, -62], 'polar', 'ध्रुवीय'),
+  Preset('Asia', 'एशिया', [45, 5, 145, 60], 'continent', 'महाद्वीप'),
+  Preset('Africa', 'अफ़्रीका', [-18, -35, 51, 37], 'continent', 'महाद्वीप'),
+  Preset('North America', 'उत्तरी अमेरिका', [-130, 15, -60, 60], 'continent', 'महाद्वीप'),
+  Preset('South America', 'दक्षिणी अमेरिका', [-81, -55, -35, 12], 'continent', 'महाद्वीप'),
+  Preset('Northern Hemisphere', 'उत्तरी गोलार्ध', [-180, 0, 180, 89], 'half of Earth', 'आधी पृथ्वी'),
+  Preset('Southern Hemisphere', 'दक्षिणी गोलार्ध', [-180, -89, 180, 0], 'half of Earth', 'आधी पृथ्वी'),
+  Preset('Tropics', 'उष्णकटिबंध', [-180, -23.5, 180, 23.5], 'climate belt', 'जलवायु पट्टी'),
+  Preset('Indian Ocean', 'हिंद महासागर', [40, -40, 110, 25], 'ocean', 'महासागर'),
+  Preset('Pacific Ocean (central)', 'प्रशांत महासागर (मध्य)', [-180, -30, -90, 30], 'ocean', 'महासागर'),
+  Preset('North Atlantic', 'उत्तरी अटलांटिक', [-70, 10, -10, 60], 'ocean', 'महासागर'),
+  Preset('China', 'चीन', [74, 20, 134, 50], 'country', 'देश'),
+  Preset('Brazil', 'ब्राज़ील', [-74, -33, -35, 5], 'country', 'देश'),
+  Preset('Pakistan and Indus basin', 'पाकिस्तान और सिंधु बेसिन', [61, 24, 77, 37], 'river basin', 'नदी बेसिन'),
+  Preset('Ganga plain', 'गंगा का मैदान', [77, 23.5, 89, 30], 'river basin', 'नदी बेसिन'),
+  Preset('South-East Asia', 'दक्षिण-पूर्व एशिया', [92, -10, 127, 23], 'monsoon region', 'मानसूनी क्षेत्र'),
+  Preset('Middle East', 'मध्य पूर्व', [34, 12, 60, 38], 'dry region', 'सूखा क्षेत्र'),
+  Preset('Southern Africa', 'दक्षिणी अफ़्रीका', [12, -35, 40, -15], 'drought-prone', 'सूखा-प्रवण'),
+  Preset('Greenland', 'ग्रीनलैंड', [-55, 60, -20, 83], 'ice sheet', 'बर्फ़ की चादर'),
 ];
 
 /// One-line meanings of the "My Place" variables (NASA POWER, built on MERRA-2).
@@ -114,6 +138,7 @@ const kReferences = <Reference>[
   // Software
   Reference('Software', 'Flutter, Firebase (Hosting, Firestore, Auth, AI Logic)', 'Google', 'https://firebase.google.com/', 'App, hosting, cache and the AI explainer.', 'ऐप, होस्टिंग, कैश और एआई व्याख्याकार।'),
   Reference('Software', 'xarray, NumPy, SciPy, pandas, Pillow', 'open source', 'https://xarray.dev/', 'The Python data pipeline.', 'पायथन डेटा पाइपलाइन।'),
+  Reference('NASA tools', 'NASA GIBS Blue Marble (Shaded Relief and Bathymetry)', 'NASA EOSDIS Global Imagery Browse Services; NASA Earth Observatory', 'https://nasa-gibs.github.io/gibs-api-docs/', 'Satellite picture of Earth used as the base of the flat map.', 'समतल नक़्शे के आधार के रूप में पृथ्वी की उपग्रह तस्वीर।'),
   Reference('Software', 'Groq and OpenRouter (back-up AI text)', 'Groq Inc.; OpenRouter Inc.', 'https://console.groq.com/docs/models', 'Back-up language models for the labelled AI notes when Gemini does not answer. Never used for verdicts.', 'जब Gemini जवाब न दे तब लेबल-युक्त एआई नोट्स के लिए बैक-अप मॉडल। फ़ैसलों में कभी नहीं।'),
   Reference('Software', 'BigDataCloud and OpenStreetMap Nominatim', 'BigDataCloud; OpenStreetMap contributors (ODbL)', 'https://www.bigdatacloud.com/free-api/free-reverse-geocode-to-city-api', 'Place names (town, state, country, continent) under the pointer on the map.', 'नक़्शे पर पॉइंटर के नीचे जगह का नाम (क़स्बा, राज्य, देश, महाद्वीप)।'),
   Reference('Software', 'Nunito typeface', 'The Nunito Project Authors (SIL Open Font License 1.1)', 'https://github.com/googlefonts/nunito', 'Rounded heading font, bundled with the app.', 'गोल शीर्षक फ़ॉन्ट, ऐप के साथ शामिल।'),

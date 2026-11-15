@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'l10n/strings.dart';
@@ -50,6 +51,53 @@ class AppState extends ChangeNotifier {
   late final PowerService power = PowerService(device: device, firebaseReady: firebaseReady);
   late final DataService data = DataService(dataBaseUrl);
   AiService ai = AiService(firebaseReady: false, models: const []);
+
+  /// Link to the Android APK, set by the team admin in the Lab tab (Firestore settings/app).
+  String apkUrl = '';
+
+  /// Link to the 30-second demo video, set by the admin; shows a menu entry and a floating banner.
+  String demoUrl = '';
+  bool recapDismissed = false;
+  void dismissRecap() {
+    recapDismissed = true;
+    notifyListeners();
+  }
+
+  Future<void> loadSettings() async {
+    if (!firebaseReady) return;
+    try {
+      final snap = await FirebaseFirestore.instance.collection('settings').doc('app').get().timeout(const Duration(seconds: 8));
+      final v = snap.data()?['apkUrl'], d = snap.data()?['demoUrl'];
+      final next = v is String ? v : '', nextDemo = d is String ? d : '';
+      if (next != apkUrl || nextDemo != demoUrl) {
+        apkUrl = next;
+        demoUrl = nextDemo;
+        notifyListeners();
+      }
+    } catch (_) {}
+  }
+
+  /// Turns a Google Drive "view" link into a direct download link; other links are kept as they are.
+  static String directLink(String url) {
+    final u = url.trim();
+    final m = RegExp(r'drive\.google\.com/file/d/([^/]+)').firstMatch(u) ?? RegExp(r'drive\.google\.com/open\?id=([^&]+)').firstMatch(u);
+    return m == null ? u : 'https://drive.google.com/uc?export=download&id=${m.group(1)}';
+  }
+
+  Future<void> saveApkUrl(String url) async {
+    final clean = directLink(url);
+    await FirebaseFirestore.instance.collection('settings').doc('app').set({'apkUrl': clean, 'updated': DateTime.now().toUtc().toIso8601String()}, SetOptions(merge: true));
+    apkUrl = clean;
+    notifyListeners();
+  }
+
+  Future<void> saveDemoUrl(String url) async {
+    final clean = url.trim();
+    await FirebaseFirestore.instance.collection('settings').doc('app').set({'demoUrl': clean, 'updated': DateTime.now().toUtc().toIso8601String()}, SetOptions(merge: true));
+    demoUrl = clean;
+    recapDismissed = false;
+    notifyListeners();
+  }
 
   String lang = 'en';
   bool dark = false; // light mode by default
@@ -169,6 +217,7 @@ class AppState extends ChangeNotifier {
       catalog = await data.catalog(fresh: true);
       if (catalog!.generatedAt != before) dataVersion++;
       ai = AiService(firebaseReady: firebaseReady, models: catalog!.aiModels);
+      unawaited(loadSettings());
     } catch (e) {
       error = '$e';
     }

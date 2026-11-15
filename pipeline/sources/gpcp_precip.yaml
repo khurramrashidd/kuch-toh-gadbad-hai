@@ -18,7 +18,7 @@ read:
 units: mm/day
 trend_units: percent           # rainfall trends read best as % of normal per decade
 period: {start: 1979, end: auto}
-seasons: [ANN, JJAS]
+seasons: [ANN, JJAS, DJF, MAM, SON]
 min_coverage: 0.75
 palette: precip
 citation: >-

@@ -1,1 +1,1 @@
-{"status":"ok","seconds":752.6,"layers":["ANN","JJAS"],"kind":"dataset","id":"gldas_soil","_demo":false,"at":"2026-11-14T08:17:03+00:00"}
+{"status":"ok","seconds":25.7,"layers":["ANN","JJAS","DJF","MAM","SON"],"kind":"dataset","id":"gldas_soil","_demo":false,"at":"2026-11-15T08:17:30+00:00"}

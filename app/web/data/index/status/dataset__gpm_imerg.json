@@ -1,1 +1,1 @@
-{"status":"ok","seconds":463.0,"layers":["ANN","JJAS"],"kind":"dataset","id":"gpm_imerg","_demo":false,"at":"2026-11-15T04:54:55+00:00"}
+{"status":"ok","seconds":47.2,"layers":["ANN","JJAS","DJF","MAM","SON"],"kind":"dataset","id":"gpm_imerg","_demo":false,"at":"2026-11-15T08:18:33+00:00"}

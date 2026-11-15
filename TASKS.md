@@ -77,6 +77,20 @@ Updated with every code drop. ✅ done · ⬜ remaining · 🔁 run again whenev
 - ✅ Verdict banner with stamp; coloured verdict badges; small entry animations
 - ✅ (i) pop-up explaining each test (t-test, Mann-Kendall, Seasonal MK, confidence interval, Sen's slope, p-value)
 
+## Changes (v1.6.0, 15 Nov 1 pm)
+- ✅ NASA Blue Marble satellite base map (GIBS) on every flat map, with a satellite/plain toggle and drawn-map fallback
+- ✅ Place-name chip built into every flat map (hover on web, tap on phone)
+- ✅ My place: compact variable tiles; tap opens the full report in a pop-up
+- ✅ Explore: Filters panel with labelled groups and "Apply on map"
+- ⏳ OpenStreetMap street map (only if time remains after the web is confirmed)
+
+## Changes (v1.7.0, 15 Nov 2 pm)
+- ✅ "Where?" list: whole world, continents, hemispheres, oceans and more countries (38 regions)
+- ✅ "Curious about" topics: 10 (added rivers and floods, drought, global warming, farming weather)
+- ✅ More seasons in the pipeline (winter, pre-monsoon, Sep-Nov) for GISTEMP, GLDAS, GPCP, GPM; needs one offline re-run
+- ✅ Opening video player: website (HTML, muted autoplay, Skip, Sound on) and Android (video_player); labelled AI-generated
+- ✅ AI disclosure updated (Claude, Gemini, Groq, OpenRouter, AI video)
+
 ## Remaining
 - ⬜ Real data run: paste the summary table and `python -m detective status`
 - ⬜ Firebase console: Firestore, Anonymous + Google sign-in, AI Logic (Gemini Developer API)

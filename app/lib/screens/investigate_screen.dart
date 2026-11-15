@@ -78,6 +78,7 @@ class _InvestigateScreenState extends State<InvestigateScreen> {
                 ),
               ]);
             }),
+            const Padding(padding: EdgeInsets.only(top: 12), child: Align(alignment: Alignment.centerLeft, child: ApkButton())),
             SectionTitle(tx(context, 'Start an investigation', 'जाँच शुरू करें'), icon: Icons.search_rounded, key: _stepsKey),
 
             // ---------------- guided investigation
