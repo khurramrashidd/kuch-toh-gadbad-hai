@@ -112,7 +112,8 @@ const kGeoLabels = <GeoLabel>[
 
 /// Interactive orthographic globe: drag to spin, pinch / wheel / buttons to zoom, tap to pick a place.
 class GlobeView extends StatefulWidget {
-  const GlobeView({super.key, this.meta, this.cells, this.filter = const CellFilter(), this.markers = const [], this.regions = const [], this.redString = false, this.onTap, this.focus, this.height, this.onLocate, this.focusZoom});
+  const GlobeView({super.key, this.meta, this.cells, this.filter = const CellFilter(), this.markers = const [], this.regions = const [], this.redString = false, this.onTap, this.focus, this.height, this.onLocate, this.focusZoom, this.onHover});
+  final void Function(double lat, double lon)? onHover;
   final VoidCallback? onLocate;
   final double? focusZoom;
   final LayerMeta? meta;
@@ -198,6 +199,12 @@ class _GlobeViewState extends State<GlobeView> {
               },
               child: Listener(
                 behavior: HitTestBehavior.opaque,
+                onPointerHover: widget.onHover == null
+                    ? null
+                    : (e) {
+                        final ll = _unproject(e.localPosition, size);
+                        if (ll != null) widget.onHover!(ll.$1, ll.$2);
+                      },
                 onPointerSignal: (e) {
                   if (e is PointerScrollEvent) _setZoom(_zoom * (e.scrollDelta.dy < 0 ? 1.12 : 1 / 1.12));
                 },

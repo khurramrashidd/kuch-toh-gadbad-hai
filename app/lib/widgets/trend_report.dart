@@ -8,6 +8,7 @@ import '../stats/extra.dart';
 import '../stats/trend.dart';
 import '../theme.dart';
 import 'common.dart';
+import 'test_info.dart';
 import 'trend_chart.dart';
 
 /// The verdict panel used everywhere a time series is judged:
@@ -108,17 +109,12 @@ class _TrendReportState extends State<TrendReport> {
 
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: k.card, borderRadius: BorderRadius.circular(14), border: Border.all(color: col.withValues(alpha: 0.55))),
+      decoration: BoxDecoration(color: k.card, borderRadius: BorderRadius.circular(18), border: Border.all(color: k.line), boxShadow: k.dark ? null : [BoxShadow(color: k.accent.withValues(alpha: 0.08), blurRadius: 14, offset: const Offset(0, 4))]),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Expanded(child: Text(widget.title, style: Theme.of(context).textTheme.titleMedium)),
-          VerdictChip(code),
-        ]),
-        const SizedBox(height: 6),
-        if (mk.valid)
-          Text('${fmtSigned(perDec)} $unit ${tx(context, 'per decade', 'प्रति दशक')}', style: TextStyle(color: col, fontSize: 22, fontWeight: FontWeight.w900)),
-        Text(sentence(), style: const TextStyle(height: 1.35)),
+        Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
+        VerdictBanner(code: code, sentence: sentence(), rate: mk.valid ? '${fmtSigned(perDec)} $unit ${tx(context, 'per decade', 'प्रति दशक')}' : null),
+        const SizedBox(height: 10),
         TrendChart(series: s, color: col, height: 170, unitLabel: unit, emergedLabel: context.t('emerged_in'), breakLabel: context.t('break_in')),
         Row(children: [
           Text('${rg.start.round()}', style: Theme.of(context).textTheme.bodySmall),
@@ -142,14 +138,17 @@ class _TrendReportState extends State<TrendReport> {
         // ---- tests side by side
         Text('${tx(context, 'Tests that agree', 'सहमत जाँचें')}: $passed / $totalChecks', style: const TextStyle(fontWeight: FontWeight.w800)),
         const SizedBox(height: 4),
-        for (final t in tests) _TestRow(name: t.$1, hint: t.$2, pass: t.$3 == null ? null : t.$3! < 0.05, detail: expert ? 'p = ${fmtP(t.$3)}' : null),
+        for (final t in tests) _TestRow(name: t.$1, hint: t.$2, pass: t.$3 == null ? null : t.$3! < 0.05, detail: expert ? 'p = ${fmtP(t.$3)}' : null, info: t.$4),
         _TestRow(
           name: tx(context, '95% confidence interval', '95% विश्वास अंतराल'),
           hint: tx(context, 'The range the true rate most likely lies in. If it includes zero, "no change" is still possible.',
               'वह दायरा जिसमें असली दर होने की सबसे ज़्यादा संभावना है। अगर इसमें शून्य है, तो "कोई बदलाव नहीं" भी संभव है।'),
+          info: 'ci',
           pass: mk.ciLo.isFinite ? ciExcludesZero : null,
           detail: mk.ciLo.isFinite ? '${fmtSigned(mk.ciLo * 10)} … ${fmtSigned(mk.ciHi * 10)} $unit/${tx(context, 'decade', 'दशक')}' : null,
         ),
+        const SizedBox(height: 4),
+        const TestInfoChips(ids: ['sen', 'p']),
         const SizedBox(height: 8),
 
         // ---- needs more years / emerged
@@ -269,8 +268,9 @@ class _TrendReportState extends State<TrendReport> {
 }
 
 class _TestRow extends StatelessWidget {
-  const _TestRow({required this.name, required this.hint, required this.pass, this.detail});
+  const _TestRow({required this.name, required this.hint, required this.pass, this.detail, this.info});
   final String name, hint;
+  final String? info; // key into kTestInfo: shows the (i) pop-up
   final bool? pass;
   final String? detail;
   @override
@@ -294,6 +294,7 @@ class _TestRow extends StatelessWidget {
             Text(hint, style: TextStyle(color: k.muted, fontSize: 12)),
           ]),
         ),
+        if (info != null) InfoDot(info!),
       ]),
     );
   }
@@ -329,7 +330,7 @@ class _ScanPainter extends CustomPainter {
     final step = scan.cells.length > 1 ? math.max(1, (scan.cells[1].$2 - scan.cells[0].$2).abs()) : 1;
     final base = scan.fullSign > 0 ? p.rising : p.falling;
     for (final c in scan.cells) {
-      final col = switch (c.$3) { 2 => base, 1 => base.withValues(alpha: 0.35), 0 => p.notProven.withValues(alpha: 0.35), _ => p.notProven };
+      final col = switch (c.$3) { 2 => base, 1 => base.withValues(alpha: 0.35), 0 => p.muted.withValues(alpha: 0.30), _ => p.muted };
       canvas.drawRect(Rect.fromLTWH(c.$1 * cw, c.$2 * ch, cw * step + 0.5, ch * step + 0.5), Paint()..color = col);
     }
     void label(String t, Offset o) {

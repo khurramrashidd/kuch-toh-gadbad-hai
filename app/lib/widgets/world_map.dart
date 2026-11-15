@@ -39,7 +39,9 @@ class WorldMap extends StatefulWidget {
     this.focus,
     this.layerPainter,
     this.onLocate,
+    this.onHover,
   });
+  final void Function(double lat, double lon)? onHover; // mouse moved over the map
   final VoidCallback? onLocate; // "zoom to where I am" button
   final CustomPainter? layerPainter; // drawn instead of the PNG (filtered cells)
   final String? layerUrl, stippleUrl;
@@ -135,7 +137,14 @@ class _WorldMapState extends State<WorldMap> {
                         final lat = 90 - p.dy / size.height * 180;
                         widget.onTap!(lat.clamp(-90.0, 90.0), lon.clamp(-180.0, 180.0));
                       },
-                child: SizedBox(
+                child: MouseRegion(
+                  onHover: widget.onHover == null
+                      ? null
+                      : (e) {
+                          final p = e.localPosition;
+                          widget.onHover!((90 - p.dy / size.height * 180).clamp(-90.0, 90.0), (p.dx / size.width * 360 - 180).clamp(-180.0, 180.0));
+                        },
+                  child: SizedBox(
                   width: size.width,
                   height: size.height,
                   child: Stack(children: [
@@ -162,6 +171,7 @@ class _WorldMapState extends State<WorldMap> {
                       ),
                     Positioned.fill(child: CustomPaint(painter: _OverlayPainter(widget.regions, widget.markers, widget.redString, k))),
                   ]),
+                  ),
                 ),
               ),
             ),

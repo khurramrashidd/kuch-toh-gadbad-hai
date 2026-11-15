@@ -212,8 +212,19 @@ def fetch_earthaccess(src: Source, cfg: Config) -> list[Path]:
     import earthaccess
 
     a = src.access
-    earthdata_login()
     raw_dir = ensure_dir(cfg.path_raw(a.get("raw_as") or src.id))  # raw_as: several sources share one download
+    if os.environ.get("KTGH_OFFLINE") == "1":  # --offline: build from the files already on disk, no network at all
+        stream = a.get("mode", "download") == "stream"
+        cached = sorted(p for p in raw_dir.iterdir() if p.is_file() and not p.name.startswith("_") and not p.name.endswith(".part")
+                        and not _is_sidecar(p) and (p.name.endswith(".subset.nc") == stream))
+        if not stream:
+            _remove_broken(cached)
+            cached = [p for p in cached if p.exists()]
+        if not cached:
+            raise DetectiveError(f"{src.id}: --offline but nothing is cached yet")
+        log.info("  %s: offline - using %d cached file(s)", src.id, len(cached))
+        return cached
+    earthdata_login()
     names = a.get("short_name")
     names = [names] if isinstance(names, str) else list(names or [])
     if not names and not a.get("concept_id"):
@@ -416,12 +427,16 @@ def _stream_subset(granules: list, raw_dir: Path, subset: dict) -> list[Path]:
                 dims = {d: coarsen for d in ds.dims if d.lower() in ("lat", "lon", "latitude", "longitude", "y", "x")}
                 if dims:
                     ds = ds.coarsen(dims, boundary="trim").mean()
-            tmp = target.with_name("_" + target.name + ".part")
+            tmp = target.with_name(f"_{target.name}.{time.time_ns()}.part")
             ds.load().to_netcdf(tmp)
-        os.replace(tmp, target)
+        if not target.exists():
+            os.replace(tmp, target)
 
     # Two passes over what is missing; inside a pass every file gets 3 tries with a pause,
     # and after 5 failures in a row we wait for the connection to come back instead of skipping everything.
+    import concurrent.futures as _cf
+
+    pool = _cf.ThreadPoolExecutor(max_workers=1)
     failed_in_row = 0
     for rnd in (1, 2):
         left = [(g, t) for g, t in todo if not t.exists()]
@@ -433,9 +448,13 @@ def _stream_subset(granules: list, raw_dir: Path, subset: dict) -> list[Path]:
             ok = False
             for attempt in range(3):
                 try:
-                    one(g, target)
+                    fut = pool.submit(one, g, target)
+                    fut.result(timeout=240)  # a silent, hung connection must not freeze the whole run
                     ok = True
                     break
+                except _cf.TimeoutError:
+                    last = "no answer for 4 minutes"
+                    pool = _cf.ThreadPoolExecutor(max_workers=1)  # leave the hung worker behind
                 except Exception as e:
                     last = str(e)[:140]
                     time.sleep(8 * (attempt + 1))

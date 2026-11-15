@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import '../app_state.dart';
 import '../knowledge.dart';
 import '../l10n/strings.dart';
 import '../models/models.dart';
+import '../services/place_name_service.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import '../widgets/globe.dart';
@@ -32,6 +34,26 @@ class _ExploreScreenState extends State<ExploreScreen> {
   String? _regionName;
   Future<(Series, int)?>? _regionSeries;
   List<double>? _pendingBox;
+  final PlaceNameService _places = PlaceNameService();
+  String? _placeLabel;
+  Timer? _hoverTimer;
+  int _mapPointers = 0; // fingers on the map: page scrolling is paused so pinch and drag reach the map
+
+  void _lookup(double lat, double lon, {bool now = false}) {
+    _hoverTimer?.cancel();
+    final lang = AppScope.read(context).lang;
+    _hoverTimer = Timer(Duration(milliseconds: now ? 0 : 350), () async {
+      final name = await _places.name(lat, lon, lang: lang);
+      if (mounted && name != _placeLabel) setState(() => _placeLabel = name);
+    });
+  }
+
+  @override
+  void dispose() {
+    _hoverTimer?.cancel();
+    super.dispose();
+  }
+
   (double, double)? _me; // "zoom to my location"
   List<double>? _meBox, _meCentre;
 
@@ -121,6 +143,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   void _tap(LayerMeta meta, LayerCells cells, double lat, double lon) {
     final app = AppScope.read(context);
+    _lookup(lat, lon, now: true);
     if (_boxMode) {
       final c = _corner;
       if (c == null) {
@@ -245,6 +268,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     final filter = CellFilter(direction: _direction, minVerdict: _minVerdict);
     final phone = MediaQuery.sizeOf(context).width < 700;
     final showFilters = !phone || _showFilters;
+    final wide = MediaQuery.sizeOf(context).width >= 1000;
     String sphereName(String s) => switch (s) {
       'atmosphere' => tx(context, 'Air', 'हवा'),
       'hydrosphere' => tx(context, 'Water', 'पानी'),
@@ -259,8 +283,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
     return SafeArea(
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1100),
+          constraints: BoxConstraints(maxWidth: wide ? 1500 : 1100),
           child: ListView(
+            physics: _mapPointers > 0 ? const NeverScrollableScrollPhysics() : null,
             padding: const EdgeInsets.fromLTRB(14, 10, 14, 40),
             children: [
               Row(
@@ -303,6 +328,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     ),
                     for (final s in spheres)
                       ChoiceChip(
+                        avatar: CircleAvatar(radius: 6, backgroundColor: k.sphere(s)),
+                        showCheckmark: false,
+                        selectedColor: k.sphere(s).withValues(alpha: 0.25),
+                        side: BorderSide(color: k.sphere(s).withValues(alpha: _sphere == s ? 0.9 : 0.4)),
                         label: Text(sphereName(s)),
                         selected: _sphere == s,
                         onSelected: (_) => setState(() => _sphere = s),
@@ -444,9 +473,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         label: _regionName,
                       ),
                   ];
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                  final mapPart = <Widget>[
                       Container(
                         padding: const EdgeInsets.all(10),
                         margin: const EdgeInsets.only(bottom: 8),
@@ -579,8 +606,27 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      if (_globe)
-                        GlobeView(
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Row(children: [
+                          Icon(Icons.place, size: 18, color: k.accent),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              _placeLabel ?? tx(context, 'Move over the map or tap it to see the place name', 'जगह का नाम देखने के लिए नक़्शे पर जाएँ या दबाएँ'),
+                              style: TextStyle(fontWeight: _placeLabel == null ? FontWeight.w500 : FontWeight.w800, color: _placeLabel == null ? k.muted : k.text),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ]),
+                      ),
+                      Listener(
+                        onPointerDown: (_) => setState(() => _mapPointers++),
+                        onPointerUp: (_) => setState(() => _mapPointers = math.max(0, _mapPointers - 1)),
+                        onPointerCancel: (_) => setState(() => _mapPointers = math.max(0, _mapPointers - 1)),
+                        child: _globe
+                        ? GlobeView(
                           meta: meta,
                           cells: cells,
                           filter: filter,
@@ -597,9 +643,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
                               : null,
                           onLocate: _goHere,
                           onTap: (lat, lon) => _tap(meta, cells, lat, lon),
+                          onHover: _lookup,
                         )
-                      else
-                        WorldMap(
+                        : WorldMap(
                           layerUrl: app.data.url('${meta.path}/trend.png'),
                           stippleUrl: _stipple && !filter.active
                               ? app.data.url('${meta.path}/sig.png')
@@ -613,7 +659,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           focus: b != null ? (b[0] <= b[2] ? b : null) : _meBox,
                           onLocate: _goHere,
                           onTap: (lat, lon) => _tap(meta, cells, lat, lon),
+                          onHover: _lookup,
                         ),
+                      ),
                       const SizedBox(height: 8),
                       _Legend(meta: meta),
                       const SizedBox(height: 4),
@@ -627,9 +675,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             : context.t('dots_mean'),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
-                      const SizedBox(height: 10),
-                      if (b != null)
-                        FutureBuilder<(Series, int)?>(
+                  ];
+                  final Widget resultPart = b != null
+                      ? FutureBuilder<(Series, int)?>(
                           future: _regionSeries,
                           builder: (context, rs) {
                             if (rs.connectionState != ConnectionState.done)
@@ -657,8 +705,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             );
                           },
                         )
-                      else if (_cell == null)
-                        Text(
+                      : _cell == null
+                      ? Text(
                           tx(
                             context,
                             'Tap the map for one spot, or use "Draw my own region" / "Region presets" for an area.',
@@ -666,9 +714,21 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           ),
                           style: TextStyle(color: k.accent),
                         )
-                      else
-                        _readout(context, meta, ds),
-                    ],
+                      : _readout(context, meta, ds);
+                  // tablet / desktop: map on the left, verdict beside it; phone: stacked
+                  if (wide) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(flex: 11, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: mapPart)),
+                        const SizedBox(width: 16),
+                        Expanded(flex: 9, child: resultPart),
+                      ],
+                    );
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [...mapPart, const SizedBox(height: 10), resultPart],
                   );
                 },
               ),

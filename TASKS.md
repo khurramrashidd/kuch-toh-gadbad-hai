@@ -57,6 +57,26 @@ Updated with every code drop. ✅ done · ⬜ remaining · 🔁 run again whenev
 - ✅ NASA NEO folder reader accepts more link styles and reports what it found
 - ✅ Real data in the app: 12 datasets, 6 cases, 30 cities (site live at ktgh-nasa.web.app)
 
+## Changes (v1.3.0, 15 Nov morning) - design pass
+- ✅ Design system: one blue accent, spacing and corner-radius scale, type scale, 46 px touch targets, flat bordered cards, consistent buttons / chips / inputs / dialogs / tooltips in light and dark
+- ✅ Hero panel on the Investigate page (purpose + Ask / Test / Verdict), faint orbit motif
+- ✅ Explore on tablet and desktop: map on the left, verdict panel beside it
+- ✅ Pipeline: --offline build from downloaded files; self-healing downloads; per-file time limit
+- ⚠ Not seen on a device by the builder: needs screenshots to refine
+
+## Changes (v1.4.0, 15 Nov midday)
+- ✅ Place name under the pointer or tap, worldwide ("Panvel, Maharashtra, India, Asia")
+- ✅ AI fallback chain: Firebase Gemini -> Gemini API -> Groq -> OpenRouter (keys in app/keys.json, never committed)
+- ✅ Phone: hamburger menu with sections, tools and settings; region picker and results open as sheets
+- ✅ Phone map: page scroll pauses while fingers are on the map, so pinch and drag work
+
+## Changes (v1.5.0, 15 Nov afternoon)
+- ✅ Real data complete: MERRA-2 layer now 12,960 cells (41% of area significant), 14 datasets, 7 cases, 30 places
+- ✅ Several keys per AI provider (comma-separated in app/keys.json), rotated on every request
+- ✅ Earth & Space look: blue-to-teal gradient header, hero + 3 action cards, coloured tabs, sphere colours, Nunito headings
+- ✅ Verdict banner with stamp; coloured verdict badges; small entry animations
+- ✅ (i) pop-up explaining each test (t-test, Mann-Kendall, Seasonal MK, confidence interval, Sen's slope, p-value)
+
 ## Remaining
 - ⬜ Real data run: paste the summary table and `python -m detective status`
 - ⬜ Firebase console: Firestore, Anonymous + Google sign-in, AI Logic (Gemini Developer API)

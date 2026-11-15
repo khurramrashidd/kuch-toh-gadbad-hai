@@ -18,6 +18,7 @@ file under data/index/ and catalog.json is re-assembled under a lock after each 
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import sys
 import time
@@ -521,6 +522,7 @@ def main(argv=None) -> int:
     p.add_argument("-v", "--verbose", action="store_true")
     p.add_argument("--demo", action="store_true", help="use the synthetic demo datasets")
     p.add_argument("--output", help="override output folder (default ../app/web/data)")
+    p.add_argument("--offline", action="store_true", help="NASA Earthdata datasets: use only files already downloaded, no network")
     sub = p.add_subparsers(dest="cmd")
 
     r = sub.add_parser("run", help="everything, or only the given dataset ids")
@@ -571,6 +573,8 @@ def main(argv=None) -> int:
     d.add_argument("--clean", action="store_true")
 
     args = p.parse_args(argv)
+    if args.offline:
+        os.environ["KTGH_OFFLINE"] = "1"
     setup_logging(args.verbose)
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     if not args.cmd:

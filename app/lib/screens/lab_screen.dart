@@ -10,6 +10,7 @@ import '../knowledge.dart';
 import '../models/json.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import '../widgets/test_info.dart';
 
 class LabScreen extends StatefulWidget {
   const LabScreen({super.key});
@@ -50,6 +51,8 @@ class _LabScreenState extends State<LabScreen> {
               Expanded(child: Text(context.t('lab_title'), style: Theme.of(context).textTheme.headlineSmall)),
               const HeaderActions(),
             ]),
+            SectionTitle(tx(context, 'The tests we use (tap to learn)', 'हमारी जाँचें (जानने के लिए दबाएँ)'), icon: Icons.school, color: context.k.violet),
+            const TestInfoChips(),
             SectionTitle(context.t('five_checks'), icon: Icons.checklist),
             for (final k in checks)
               Card(
@@ -119,13 +122,15 @@ class _LabScreenState extends State<LabScreen> {
               child: Text(
                   tx(context,
                       'AI-assisted project. (1) Code, documentation and the synthetic sample/demo files were written with the help of an AI assistant (Anthropic Claude) and reviewed by the team. '
-                          '(2) Inside the app, Google Gemini (Firebase AI Logic) writes the "Detective\'s notes" and the "what else to look at" suggestions; these are always labelled as AI. '
+                          '(2) Inside the app, a language model (Google Gemini, with Groq- or OpenRouter-hosted open models as back-ups) writes the "Detective\'s notes" and the "what else to look at" suggestions; these are always labelled as AI. '
                           'No verdict, number, map or chart is produced by AI: they are computed from the cited data with the published methods above. No NASA logos or mission emblems are used.',
                       'एआई-सहायित परियोजना। (1) कोड, दस्तावेज़ और बनावटी नमूना/डेमो फ़ाइलें एआई सहायक (Anthropic Claude) की मदद से लिखी गईं और टीम ने जाँचीं। '
                           '(2) ऐप में Google Gemini (Firebase AI Logic) "जासूस के नोट्स" और "और क्या देखें" सुझाव लिखता है; इन पर हमेशा एआई का लेबल रहता है। '
                           'कोई फ़ैसला, आँकड़ा, नक़्शा या चार्ट एआई नहीं बनाता: वे ऊपर दिए प्रकाशित तरीक़ों से उद्धृत डेटा पर गणना हैं। NASA के लोगो या मिशन चिह्न इस्तेमाल नहीं किए गए।'),
                   style: const TextStyle(height: 1.4, fontSize: 13)),
             ),
+            const SizedBox(height: 6),
+            Text('${tx(context, 'AI providers switched on', 'चालू एआई प्रदाता')}: ${context.app.ai.providers.isEmpty ? tx(context, 'none', 'कोई नहीं') : context.app.ai.providers.join(', ')}', style: Theme.of(context).textTheme.bodySmall),
             SectionTitle(tx(context, 'Team', 'टीम'), icon: Icons.groups),
             const Text('$kTeamName · $kTeamMembers · NASA Space Apps Challenge 2026, $kLocalEvent'),
             const _AdminPanel(),

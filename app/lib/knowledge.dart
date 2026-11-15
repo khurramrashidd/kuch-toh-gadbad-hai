@@ -114,6 +114,9 @@ const kReferences = <Reference>[
   // Software
   Reference('Software', 'Flutter, Firebase (Hosting, Firestore, Auth, AI Logic)', 'Google', 'https://firebase.google.com/', 'App, hosting, cache and the AI explainer.', 'ऐप, होस्टिंग, कैश और एआई व्याख्याकार।'),
   Reference('Software', 'xarray, NumPy, SciPy, pandas, Pillow', 'open source', 'https://xarray.dev/', 'The Python data pipeline.', 'पायथन डेटा पाइपलाइन।'),
+  Reference('Software', 'Groq and OpenRouter (back-up AI text)', 'Groq Inc.; OpenRouter Inc.', 'https://console.groq.com/docs/models', 'Back-up language models for the labelled AI notes when Gemini does not answer. Never used for verdicts.', 'जब Gemini जवाब न दे तब लेबल-युक्त एआई नोट्स के लिए बैक-अप मॉडल। फ़ैसलों में कभी नहीं।'),
+  Reference('Software', 'BigDataCloud and OpenStreetMap Nominatim', 'BigDataCloud; OpenStreetMap contributors (ODbL)', 'https://www.bigdatacloud.com/free-api/free-reverse-geocode-to-city-api', 'Place names (town, state, country, continent) under the pointer on the map.', 'नक़्शे पर पॉइंटर के नीचे जगह का नाम (क़स्बा, राज्य, देश, महाद्वीप)।'),
+  Reference('Software', 'Nunito typeface', 'The Nunito Project Authors (SIL Open Font License 1.1)', 'https://github.com/googlefonts/nunito', 'Rounded heading font, bundled with the app.', 'गोल शीर्षक फ़ॉन्ट, ऐप के साथ शामिल।'),
   Reference('Software', 'Open-Meteo weather API', 'Open-Meteo.com (CC BY 4.0)', 'https://open-meteo.com/', 'Only the "here and now" weather strip. Never used in any trend or verdict.', 'सिर्फ़ "यहाँ और अभी" मौसम पट्टी। किसी रुझान या फ़ैसले में कभी नहीं।'),
   Reference('Software', 'Natural Earth', 'public domain', 'https://www.naturalearthdata.com/', 'Coastlines and city names on the map and globe.', 'नक़्शे और ग्लोब पर तटरेखाएँ और शहरों के नाम।'),
 ];

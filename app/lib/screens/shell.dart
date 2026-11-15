@@ -5,7 +5,9 @@ import '../config.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import 'cases_screen.dart';
+import 'evidence_screen.dart';
 import 'explore_screen.dart';
+import 'game_screen.dart';
 import 'investigate_screen.dart';
 import 'lab_screen.dart';
 import 'place_screen.dart';
@@ -85,12 +87,13 @@ class Shell extends StatelessWidget {
 
     if (phone) {
       return Scaffold(
-        body: SafeArea(bottom: false, child: Column(children: [const _Header(compact: true), Expanded(child: MediaQuery.removePadding(context: context, removeTop: true, child: content))])),
+        drawer: _Menu(dests: [for (final d in dests) (d.$2, d.$3, d.$4)], tab: tab),
+        body: ColoredBox(color: k.brand.first, child: SafeArea(bottom: false, child: ColoredBox(color: k.bg, child: Column(children: [const _Header(compact: true), Expanded(child: MediaQuery.removePadding(context: context, removeTop: true, child: content))])))),
         bottomNavigationBar: NavigationBar(
           selectedIndex: tab,
           onDestinationSelected: go,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          destinations: [for (final d in dests) NavigationDestination(icon: Icon(d.$1), selectedIcon: Icon(d.$2), label: d.$3)],
+          destinations: [for (var i = 0; i < dests.length; i++) NavigationDestination(icon: Icon(dests[i].$1, color: k.tab(i)), selectedIcon: Icon(dests[i].$2), label: dests[i].$3)],
         ),
       );
     }
@@ -105,7 +108,7 @@ class Shell extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   child: Material(
-                    color: i == tab ? k.accent.withValues(alpha: 0.12) : Colors.transparent,
+                    color: i == tab ? k.tab(i) : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
@@ -113,12 +116,12 @@ class Shell extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         child: Row(children: [
-                          Icon(i == tab ? dests[i].$2 : dests[i].$1, color: i == tab ? k.accent : k.muted),
+                          Icon(i == tab ? dests[i].$2 : dests[i].$1, color: i == tab ? Colors.white : k.tab(i)),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                              Text(dests[i].$3, style: TextStyle(fontWeight: FontWeight.w700, color: i == tab ? k.accent : k.text)),
-                              Text(dests[i].$4, style: TextStyle(fontSize: 11.5, color: k.muted)),
+                              Text(dests[i].$3, style: TextStyle(fontWeight: FontWeight.w800, fontFamily: kHeadFont, color: i == tab ? Colors.white : k.text)),
+                              Text(dests[i].$4, style: TextStyle(fontSize: 11.5, color: i == tab ? Colors.white.withValues(alpha: 0.85) : k.muted)),
                             ]),
                           ),
                         ]),
@@ -210,31 +213,60 @@ class _Header extends StatelessWidget {
   final bool compact;
   @override
   Widget build(BuildContext context) {
-    final k = context.k;
-    final title = Row(mainAxisSize: MainAxisSize.min, children: [
-      Icon(Icons.travel_explore, color: k.accent, size: compact ? 24 : 28),
-      const SizedBox(width: 8),
-      Flexible(child: Text(kAppName, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w900, fontSize: compact ? 17 : 19, color: k.text))),
-    ]);
-    if (compact) {
-      return Container(
-        color: k.surface,
-        padding: const EdgeInsets.fromLTRB(12, 4, 4, 6),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [Expanded(child: title), const HeaderActions(force: true)]),
-          const _HereNow(dense: true),
-        ]),
-      );
-    }
-    return Container(
-      color: k.surface,
-      padding: const EdgeInsets.fromLTRB(16, 6, 8, 6),
-      child: Row(children: [
-        title,
-        const SizedBox(width: 20),
-        const Expanded(child: _HereNow()),
-        const HeaderActions(force: true),
-      ]),
+    final base = context.k;
+    // Everything inside the bar is drawn in white on the blue-to-teal gradient.
+    return Theme(
+      data: Theme.of(context).copyWith(extensions: [base.onBrand()]),
+      child: Builder(builder: (context) {
+        final title = Row(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+            width: compact ? 32 : 36,
+            height: compact ? 32 : 36,
+            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(11)),
+            child: Icon(Icons.travel_explore, color: const Color(0xFFFFC078), size: compact ? 20 : 23),
+          ),
+          const SizedBox(width: 9),
+          Flexible(child: Text(kAppName, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w900, fontSize: compact ? 18 : 20, color: Colors.white, fontFamily: kHeadFont))),
+        ]);
+        final deco = BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.centerLeft, end: Alignment.centerRight, colors: base.brand),
+          boxShadow: [BoxShadow(color: base.brand.first.withValues(alpha: 0.25), blurRadius: 10, offset: const Offset(0, 3))],
+        );
+        if (compact) {
+          return Container(
+            decoration: deco,
+            padding: const EdgeInsets.fromLTRB(2, 4, 4, 8),
+            child: CustomPaint(
+              painter: OrbitPainter(Colors.white.withValues(alpha: 0.08)),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Row(children: [
+                  IconButton(
+                    tooltip: tx(context, 'Menu', 'मेनू'),
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                    icon: const Icon(Icons.menu_rounded, color: Colors.white),
+                  ),
+                  Expanded(child: title),
+                  const ThemeButton(),
+                ]),
+                const Padding(padding: EdgeInsets.only(left: 12), child: _HereNow(dense: true)),
+              ]),
+            ),
+          );
+        }
+        return Container(
+          decoration: deco,
+          padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+          child: CustomPaint(
+            painter: OrbitPainter(Colors.white.withValues(alpha: 0.08)),
+            child: Row(children: [
+              title,
+              const SizedBox(width: 20),
+              const Expanded(child: _HereNow()),
+              const HeaderActions(force: true),
+            ]),
+          ),
+        );
+      }),
     );
   }
 }
@@ -353,6 +385,112 @@ class _RightBar extends StatelessWidget {
               child: TextButton.icon(onPressed: () => AppScope.read(context).reload(), icon: const Icon(Icons.refresh, size: 18), label: Text(context.t('reload_data')))),
         ]),
       ]),
+    );
+  }
+}
+
+/// Phone menu (hamburger): every section, the tools and the settings in one place.
+class _Menu extends StatelessWidget {
+  const _Menu({required this.dests, required this.tab});
+  final List<(IconData, String, String)> dests;
+  final int tab;
+  @override
+  Widget build(BuildContext context) {
+    final app = context.app;
+    final k = context.k;
+    void close() => Navigator.of(context).pop();
+    Widget label(String t) => Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
+          child: Text(t.toUpperCase(), style: TextStyle(color: k.muted, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.8)),
+        );
+    return Drawer(
+      backgroundColor: k.surface,
+      child: SafeArea(
+        child: ListView(padding: EdgeInsets.zero, children: [
+          Container(
+            margin: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: k.brand)),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Row(children: [
+                Icon(Icons.travel_explore, color: Color(0xFFFFC078), size: 30),
+                SizedBox(width: 10),
+                Expanded(child: Text(kAppName, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white, fontFamily: kHeadFont))),
+              ]),
+              const SizedBox(height: 6),
+              Text(tx(context, 'The Earth trend detective', 'पृथ्वी के रुझानों का जासूस'), style: TextStyle(color: Colors.white.withValues(alpha: 0.88), fontSize: 13)),
+            ]),
+          ),
+          label(tx(context, 'Sections', 'अनुभाग')),
+          for (var i = 0; i < dests.length; i++)
+            ListTile(
+              leading: IconBadge(dests[i].$1, color: k.tab(i), size: 36, solid: i == tab),
+              title: Text(dests[i].$2, style: TextStyle(fontWeight: FontWeight.w800, fontFamily: kHeadFont, color: i == tab ? k.tab(i) : k.text)),
+              subtitle: Text(dests[i].$3, style: TextStyle(fontSize: 12, color: k.muted)),
+              selected: i == tab,
+              onTap: () {
+                close();
+                AppScope.read(context).goTab(i);
+              },
+            ),
+          label(tx(context, 'Tools', 'औज़ार')),
+          ListTile(
+            leading: IconBadge(Icons.upload_file, color: k.sun, size: 36),
+            title: Text(tx(context, 'Bring your own evidence', 'अपना सबूत लाएँ')),
+            onTap: () {
+              close();
+              Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const EvidenceScreen()));
+            },
+          ),
+          ListTile(
+            leading: IconBadge(Icons.sports_esports, color: k.violet, size: 36),
+            title: Text(tx(context, 'Can you beat the test?', 'क्या आप जाँच को हरा सकते हैं?')),
+            onTap: () {
+              close();
+              Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const GameScreen()));
+            },
+          ),
+          label(tx(context, 'Settings', 'सेटिंग')),
+          SwitchListTile(
+            secondary: Icon(Icons.science_outlined, color: k.muted),
+            title: Text(tx(context, 'Scientist mode', 'वैज्ञानिक मोड')),
+            subtitle: Text(tx(context, 'Show every number', 'सारे आँकड़े दिखाएँ'), style: const TextStyle(fontSize: 12)),
+            value: app.expert,
+            onChanged: (_) => AppScope.read(context).toggleExpert(),
+          ),
+          SwitchListTile(
+            secondary: Icon(Icons.dark_mode_outlined, color: k.muted),
+            title: Text(tx(context, 'Dark mode', 'डार्क मोड')),
+            value: app.dark,
+            onChanged: (_) => AppScope.read(context).toggleTheme(),
+          ),
+          ListTile(
+            leading: Icon(Icons.translate, color: k.muted),
+            title: Text(tx(context, 'Language', 'भाषा')),
+            trailing: Text(app.lang == 'hi' ? 'हिन्दी' : 'English', style: TextStyle(color: k.accent, fontWeight: FontWeight.w700)),
+            onTap: () => AppScope.read(context).toggleLang(),
+          ),
+          ListTile(
+            leading: Icon(Icons.my_location, color: k.muted),
+            title: Text(tx(context, 'Use my location', 'मेरी जगह इस्तेमाल करें')),
+            subtitle: app.hereName == null ? null : Text(app.hereName!, style: const TextStyle(fontSize: 12)),
+            onTap: () => AppScope.read(context).locate(),
+          ),
+          ListTile(
+            leading: Icon(Icons.refresh, color: k.muted),
+            title: Text(context.t('reload_data')),
+            onTap: () {
+              close();
+              AppScope.read(context).reload();
+            },
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+            child: Text('Team $kTeamName · NASA Space Apps 2026\n${tx(context, 'AI-assisted; verdicts are computed, not AI-written.', 'एआई-सहायित; फ़ैसले गणना से, एआई से नहीं।')}', style: TextStyle(color: k.muted, fontSize: 11.5, height: 1.4)),
+          ),
+        ]),
+      ),
     );
   }
 }
